@@ -87,6 +87,44 @@ const App = () => {
 
     setupDeepLinkListener();
 
+    // 4. Web-side: Handle automatic Puter login trigger from native app (trigger_login=true)
+    try {
+      const url = new URL(window.location.href);
+      const isNativeApp = !!(window as any).Capacitor?.isNativePlatform?.();
+      const triggerLogin = url.searchParams.get('trigger_login') === 'true';
+      
+      if (!isNativeApp && triggerLogin) {
+        console.log("🌐 Live website: Triggering automatic Puter sign-in for native app...");
+        
+        const performSignIn = async () => {
+          if ((window as any).puter?.auth?.signIn) {
+            try {
+              // Sign in the user. This will open the official Puter popup on the web
+              await (window as any).puter.auth.signIn({ attempt_temp_user_creation: true });
+              
+              // Get the token from Puter
+              const token = (window as any).puter.auth.token || localStorage.getItem('puter.auth.token');
+              if (token) {
+                console.log("🔑 Puter login success! Deep linking back to native app...");
+                window.location.href = `aikurdi://auth?token=${token}`;
+              } else {
+                console.error("No token returned from Puter auth");
+              }
+            } catch (err) {
+              console.error("Puter automatic sign-in failed:", err);
+            }
+          } else {
+            // Retry after 500ms if Puter JS SDK is still loading
+            setTimeout(performSignIn, 500);
+          }
+        };
+        
+        performSignIn();
+      }
+    } catch (e) {
+      console.error("Error handling trigger_login parameters:", e);
+    }
+
     return () => {
       if (deepLinkListener) {
         deepLinkListener.remove().catch(() => {});

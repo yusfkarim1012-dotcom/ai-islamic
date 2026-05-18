@@ -142,49 +142,34 @@ const Index = () => {
   }, []);
 
   const connectPuter = async () => {
+    const isNativeApp = !!(window as any).Capacitor?.isNativePlatform?.();
+
+    if (isNativeApp) {
+      console.log("📱 Native App Puter sign-in triggered: launching live website flow...");
+      try {
+        const { Browser } = await import('@capacitor/browser');
+        // Open the live site in the system browser. It will automatically trigger Puter login and deep link back!
+        await Browser.open({ 
+          url: 'https://aikurdi.web.app/?trigger_login=true', 
+          windowName: '_blank' 
+        });
+      } catch (err) {
+        console.error("Failed to launch In-App Browser for Puter login:", err);
+        toast.error("نەتوانرا براوزەر بکرێتەوە. تکایە دووبارە هەوڵبدەرەوە.");
+      }
+      return;
+    }
+
+    // Standard Web Flow
     if (!window.puter?.auth?.signIn) {
       toast.error("Puter ئامادە نییە. تکایە دووبارە page refresh بکە.");
       return;
     }
 
-    const isNativeApp = !!(window as any).Capacitor?.isNativePlatform?.();
-    let originalOpen = window.open;
-
     try {
-      if (isNativeApp) {
-        // Native app: override window.open to intercept Puter sign-in URL,
-        // redirecting back to our live website, which deep links back to the native app!
-        window.open = (url) => {
-          if (url) {
-            try {
-              const parsedUrl = new URL(url);
-              // Force the redirect to go to our live production HTTPS domain
-              parsedUrl.searchParams.set('redirect_uri', 'https://aikurdi.web.app/?native_auth=true');
-              const finalUrl = parsedUrl.toString();
-              console.log("📱 Native App Puter login - Opening customized secure URL in system browser:", finalUrl);
-              
-              import('@capacitor/browser').then(({ Browser }) => {
-                Browser.open({ url: finalUrl, windowName: '_blank' });
-              });
-            } catch (err) {
-              console.error("Error modifying Puter URL:", err);
-            }
-          }
-          return null;
-        };
-      }
-
       await window.puter.auth.signIn({ attempt_temp_user_creation: true });
-      
-      if (isNativeApp) {
-        window.open = originalOpen;
-      }
-      
       toast.success("پەیوەندیکردن سەرکەوتوو بوو");
     } catch (error) {
-      if (isNativeApp) {
-        window.open = originalOpen;
-      }
       console.error("Puter connection error:", error);
       toast.error("نەتوانرا پەیوەندیبکرێت. تکایە دووبارە هەوڵبدەرەوە.");
     }
