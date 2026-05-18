@@ -16,8 +16,28 @@ const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
-    // Fetch remote config from Firebase on app startup
+    // 1. Fetch remote config from Firebase on app startup
     initRemoteConfig();
+
+    // 2. Extract Puter Token from URL callback if present and save it to localStorage
+    try {
+      const url = new URL(window.location.href);
+      const puterToken = url.searchParams.get('puter_token') || url.searchParams.get('token');
+      if (puterToken) {
+        console.log("🔑 Puter token found in URL, saving to localStorage...");
+        localStorage.setItem('puter.auth.token', puterToken);
+        
+        // Remove token from query parameters so it's clean
+        url.searchParams.delete('token');
+        url.searchParams.delete('puter_token');
+        url.searchParams.delete('code');
+        
+        // Redirect back to clean URL
+        window.location.href = url.origin + url.pathname + url.hash;
+      }
+    } catch (e) {
+      console.error("Error parsing Puter callback token:", e);
+    }
   }, []);
 
   return (
