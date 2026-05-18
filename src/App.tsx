@@ -24,13 +24,28 @@ const App = () => {
       const url = new URL(window.location.href);
       const isNativeApp = !!(window as any).Capacitor?.isNativePlatform?.();
 
-      // Case A: Running on the live website and received a native login callback
-      if (!isNativeApp && url.searchParams.get('native_auth') === 'true') {
-        const token = url.searchParams.get('puter_token') || url.searchParams.get('token');
-        if (token) {
-          console.log("🌐 Live website: Redirecting Puter token to native app via deep link...");
-          window.location.href = `aikurdi://auth?token=${token}`;
-          return;
+      if (!isNativeApp) {
+        // A. If trigger_login is present, set the pending flag in sessionStorage
+        if (url.searchParams.get('trigger_login') === 'true') {
+          console.log("🌐 Live website: Setting native_auth_pending in sessionStorage");
+          sessionStorage.setItem('native_auth_pending', 'true');
+        }
+
+        // B. Check if native auth is pending
+        const isPending = sessionStorage.getItem('native_auth_pending') === 'true';
+        
+        if (isPending) {
+          // Check if we have a token in URL or localStorage
+          const token = url.searchParams.get('puter_token') || 
+                        url.searchParams.get('token') || 
+                        localStorage.getItem('puter.auth.token');
+                        
+          if (token) {
+            console.log("🌐 Live website: Native auth pending and token found! Deep linking...");
+            sessionStorage.removeItem('native_auth_pending');
+            window.location.href = `aikurdi://auth?token=${token}`;
+            return;
+          }
         }
       }
 
