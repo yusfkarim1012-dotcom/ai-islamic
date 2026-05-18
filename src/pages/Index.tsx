@@ -127,17 +127,53 @@ const Index = () => {
     }
   }, [messages, activeConversation]);
 
+  // Handle Clean up URL parameters after Puter redirects back
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('token') || url.searchParams.has('puter_token') || url.searchParams.has('code')) {
+        console.log("🧹 Cleaning up auth parameters from URL");
+        const cleanUrl = window.location.pathname + window.location.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    } catch (e) {
+      console.error("Error cleaning up URL params:", e);
+    }
+  }, []);
+
   const connectPuter = async () => {
     if (!window.puter?.auth?.signIn) {
       toast.error("Puter ئامادە نییە. تکایە دووبارە page refresh بکە.");
       return;
     }
 
+    const isNativeApp = !!(window as any).Capacitor?.isNativePlatform?.();
+    let originalOpen = window.open;
+
     try {
+      if (isNativeApp) {
+        // Native app: override window.open to redirect the main webview directly to Puter
+        // This keeps the auth session in the app's webview so it returns successfully
+        window.open = (url) => {
+          console.log("📱 Native app Puter signIn: redirecting to", url);
+          window.location.href = url || '';
+          return null;
+        };
+      }
+
       await window.puter.auth.signIn({ attempt_temp_user_creation: true });
+      
+      if (isNativeApp) {
+        window.open = originalOpen;
+      }
+      
       toast.success("پەیوەندیکردن سەرکەوتوو بوو");
-    } catch {
-      toast.error("نەتوانرا پەیوەندیبکرێت. تکایە pop-up/blocker ڕێگابدە.");
+    } catch (error) {
+      if (isNativeApp) {
+        window.open = originalOpen;
+      }
+      console.error("Puter connection error:", error);
+      toast.error("نەتوانرا پەیوەندیبکرێت. تکایە دووبارە هەوڵبدەرەوە.");
     }
   };
 
