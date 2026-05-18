@@ -1,0 +1,775 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Islamic Green Theme - Design System */
+
+@layer base {
+  :root {
+    --background: 140 20% 98%;
+    --foreground: 150 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 30% 15%;
+
+    --primary: 145 63% 32%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 140 25% 94%;
+    --secondary-foreground: 150 30% 20%;
+
+    --muted: 140 15% 93%;
+    --muted-foreground: 150 10% 45%;
+
+    --accent: 45 80% 55%;
+    --accent-foreground: 150 30% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 140 20% 88%;
+    --input: 140 20% 88%;
+    --ring: 145 63% 32%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 140 20% 96%;
+    --sidebar-foreground: 150 30% 20%;
+    --sidebar-primary: 145 63% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 140 25% 92%;
+    --sidebar-accent-foreground: 150 30% 20%;
+    --sidebar-border: 140 20% 88%;
+    --sidebar-ring: 145 63% 32%;
+  }
+
+  .dark {
+    --background: 150 25% 8%;
+    --foreground: 140 20% 95%;
+
+    --card: 150 20% 12%;
+    --card-foreground: 140 20% 95%;
+
+    --popover: 150 20% 12%;
+    --popover-foreground: 140 20% 95%;
+
+    --primary: 145 55% 45%;
+    --primary-foreground: 150 30% 8%;
+
+    --secondary: 150 20% 18%;
+    --secondary-foreground: 140 20% 90%;
+
+    --muted: 150 15% 20%;
+    --muted-foreground: 140 15% 60%;
+
+    --accent: 45 70% 50%;
+    --accent-foreground: 150 30% 10%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 150 15% 22%;
+    --input: 150 15% 22%;
+    --ring: 145 55% 45%;
+
+    --sidebar-background: 150 20% 10%;
+    --sidebar-foreground: 140 20% 90%;
+    --sidebar-primary: 145 55% 45%;
+    --sidebar-primary-foreground: 150 30% 8%;
+    --sidebar-accent: 150 15% 18%;
+    --sidebar-accent-foreground: 140 20% 90%;
+    --sidebar-border: 150 15% 22%;
+    --sidebar-ring: 145 55% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-kufi;
+  }
+}
+
+@layer utilities {
+  .font-amiri {
+    font-family: 'Amiri', serif;
+  }
+
+  .font-kufi {
+    font-family: 'Noto Kufi Arabic', sans-serif;
+  }
+
+  .islamic-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23228B22' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Islamic Geometric Star Pattern */
+  .islamic-star-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23228B22' stroke-opacity='0.12' stroke-width='1'%3E%3Cpath d='M40 0L50 15L65 15L55 25L60 40L40 35L20 40L25 25L15 15L30 15Z'/%3E%3Cpath d='M40 40L50 55L65 55L55 65L60 80L40 75L20 80L25 65L15 55L30 55Z'/%3E%3Cpath d='M0 40L10 55L25 55L15 65L20 80L0 75L-20 80L-15 65L-25 55L-10 55Z' transform='translate(0,0)'/%3E%3Cpath d='M80 40L90 55L105 55L95 65L100 80L80 75L60 80L65 65L55 55L70 55Z' transform='translate(0,0)'/%3E%3Ccircle cx='40' cy='40' r='5'/%3E%3Ccircle cx='0' cy='0' r='3'/%3E%3Ccircle cx='80' cy='0' r='3'/%3E%3Ccircle cx='0' cy='80' r='3'/%3E%3Ccircle cx='80' cy='80' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Islamic Arabesque Pattern */
+  .islamic-arabesque {
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23228B22' stroke-opacity='0.1' stroke-width='0.5'%3E%3Ccircle cx='50' cy='50' r='40'/%3E%3Ccircle cx='50' cy='50' r='30'/%3E%3Ccircle cx='50' cy='50' r='20'/%3E%3Cpath d='M50 10 L90 50 L50 90 L10 50 Z'/%3E%3Cpath d='M50 20 L80 50 L50 80 L20 50 Z'/%3E%3Cpath d='M30 30 Q50 10 70 30 Q90 50 70 70 Q50 90 30 70 Q10 50 30 30'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .islamic-border {
+    border-image: repeating-linear-gradient(90deg,
+        hsl(var(--primary)) 0px,
+        hsl(var(--primary)) 4px,
+        hsl(var(--accent)) 4px,
+        hsl(var(--accent)) 8px) 1;
+  }
+
+  .text-gradient-islamic {
+    background: linear-gradient(135deg, hsl(145 63% 32%) 0%, hsl(45 80% 45%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Islamic Corner Decorations */
+  .islamic-corner-tl::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 L20 0 Q10 10 0 20 Z' fill='%23228B22' fill-opacity='0.15'/%3E%3Cpath d='M0 0 L10 0 Q5 5 0 10 Z' fill='%23DAA520' fill-opacity='0.2'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .islamic-corner-tr::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 0 L20 0 Q30 10 40 20 Z' fill='%23228B22' fill-opacity='0.15'/%3E%3Cpath d='M40 0 L30 0 Q35 5 40 10 Z' fill='%23DAA520' fill-opacity='0.2'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .islamic-corner-bl::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 40 L20 40 Q10 30 0 20 Z' fill='%23228B22' fill-opacity='0.15'/%3E%3Cpath d='M0 40 L10 40 Q5 35 0 30 Z' fill='%23DAA520' fill-opacity='0.2'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .islamic-corner-br::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 40 L20 40 Q30 30 40 20 Z' fill='%23228B22' fill-opacity='0.15'/%3E%3Cpath d='M40 40 L30 40 Q35 35 40 30 Z' fill='%23DAA520' fill-opacity='0.2'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  /* Islamic Decorative Divider */
+  .islamic-divider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .islamic-divider::before,
+  .islamic-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.3), hsl(var(--accent) / 0.3), transparent);
+  }
+
+  .islamic-divider::before {
+    margin-right: 1rem;
+  }
+
+  .islamic-divider::after {
+    margin-left: 1rem;
+  }
+
+  /* Islamic Frame */
+  .islamic-frame {
+    position: relative;
+    border: 2px solid hsl(var(--primary) / 0.2);
+    border-radius: 1rem;
+  }
+
+  .islamic-frame::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid hsl(var(--accent) / 0.15);
+    border-radius: 0.75rem;
+    pointer-events: none;
+  }
+
+  /* Islamic Glow Effect */
+  .islamic-glow {
+    box-shadow:
+      0 0 20px hsl(var(--primary) / 0.1),
+      0 0 40px hsl(var(--accent) / 0.05),
+      inset 0 1px 0 hsl(var(--primary) / 0.1);
+  }
+
+  /* Crescent Moon Decoration */
+  .crescent-decoration::before {
+    content: '☪';
+    position: absolute;
+    font-size: 1rem;
+    color: hsl(var(--accent));
+    opacity: 0.6;
+  }
+
+  /* Enhanced AI Response Tables with Horizontal Scroll */
+  .ai-response {
+    overflow-x: visible;
+  }
+
+  /* Table wrapper for horizontal scrolling */
+  .ai-response table {
+    display: table;
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 1rem 0;
+    border-radius: 0.75rem;
+    border: 2px solid hsl(var(--primary) / 0.2);
+    background: hsl(var(--card));
+    font-size: 0.75rem;
+    direction: rtl;
+    table-layout: fixed;
+    overflow: hidden;
+  }
+
+  .ai-response thead {
+    display: table-header-group;
+  }
+
+  .ai-response tbody {
+    display: table-row-group;
+  }
+
+  .ai-response tr {
+    display: table-row;
+  }
+
+  .ai-response th {
+    display: table-cell;
+    background: linear-gradient(135deg, hsl(145 60% 35%), hsl(145 50% 30%));
+    color: #ffffff;
+    padding: 0.5rem 0.375rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.7rem;
+    border-bottom: 2px solid hsl(var(--accent) / 0.3);
+    border-left: 1px solid hsl(145 40% 40%);
+    vertical-align: middle;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  /* Table header - Dark Mode */
+  .dark .ai-response th {
+    background: linear-gradient(135deg, hsl(145 45% 30%), hsl(145 40% 25%));
+    color: #ffffff;
+    border-left-color: hsl(145 35% 35%);
+  }
+
+  .ai-response th:last-child {
+    border-left: none;
+  }
+
+  .ai-response p {
+    line-height: 2;
+  }
+
+  /* Quranic Verse Style */
+  .font-quran {
+    font-family: 'Amiri Quran', serif;
+    line-height: 2.2;
+    padding: 0.5rem 0;
+  }
+
+  /* Islamic Quote Style */
+  .ai-response blockquote {
+    position: relative;
+    margin: 1.5rem 0;
+    padding: 1.25rem 1.5rem 1.25rem 1rem;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--accent) / 0.05));
+    border-radius: 0.75rem;
+    border-right: 4px solid hsl(var(--accent));
+    font-family: 'Amiri', serif;
+    font-size: 1.05rem;
+    line-height: 2;
+  }
+
+  .ai-response blockquote::before {
+    content: '❝';
+    position: absolute;
+    top: -0.5rem;
+    right: 0.75rem;
+    font-size: 1.75rem;
+    color: hsl(var(--accent));
+    background: hsl(var(--card));
+    padding: 0 0.25rem;
+    line-height: 1;
+  }
+
+  .ai-response td {
+    display: table-cell;
+    padding: 0.5rem 0.375rem;
+    border-bottom: 1px solid hsl(var(--border));
+    border-left: 1px solid hsl(var(--border) / 0.5);
+    text-align: center;
+    font-size: 0.7rem;
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.4;
+  }
+
+  .ai-response td:last-child {
+    border-left: none;
+  }
+
+  .ai-response tr:nth-child(even) td {
+    background: hsl(var(--primary) / 0.03);
+  }
+
+  .ai-response tr:hover td {
+    background: hsl(var(--primary) / 0.08);
+  }
+
+  .ai-response tr:last-child td {
+    border-bottom: none;
+  }
+
+
+
+  /* Scholar Quote Card */
+  .scholar-quote {
+    position: relative;
+    margin: 1rem 0;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.05), hsl(var(--accent) / 0.03));
+    border: 2px solid hsl(var(--primary) / 0.2);
+    border-radius: 1rem;
+    border-right: 4px solid hsl(var(--primary));
+  }
+
+  .scholar-quote::before {
+    content: '☪';
+    position: absolute;
+    top: -0.5rem;
+    right: 1rem;
+    font-size: 1.25rem;
+    color: hsl(var(--accent));
+    background: hsl(var(--background));
+    padding: 0 0.5rem;
+  }
+
+  .scholar-quote .scholar-name {
+    font-weight: 700;
+    color: hsl(var(--primary));
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .scholar-quote .scholar-name::before {
+    content: '🎓';
+    font-size: 1rem;
+  }
+
+  .scholar-quote .quote-text {
+    font-style: italic;
+    margin-bottom: 0.75rem;
+    line-height: 1.8;
+  }
+
+  .scholar-quote .source {
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .scholar-quote .source::before {
+    content: '📖';
+  }
+
+  /* Collapsible/Accordion */
+  .ai-collapsible {
+    margin: 0.75rem 0;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: hsl(var(--card));
+  }
+
+  .ai-collapsible-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    background: hsl(var(--primary) / 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+
+  .ai-collapsible-header:hover {
+    background: hsl(var(--primary) / 0.1);
+  }
+
+  .ai-collapsible-header::after {
+    content: '▼';
+    font-size: 0.75rem;
+    color: hsl(var(--primary));
+    transition: transform 0.2s ease;
+  }
+
+  .ai-collapsible[open] .ai-collapsible-header::after {
+    transform: rotate(180deg);
+  }
+
+  .ai-collapsible-content {
+    padding: 1rem;
+    border-top: 1px solid hsl(var(--border));
+  }
+
+  /* Visual Icons in Text */
+  .ai-response .icon-verse {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: hsl(var(--primary));
+    font-weight: 500;
+  }
+
+  .ai-response .icon-verse::before {
+    content: '☪';
+    color: hsl(var(--accent));
+  }
+
+  .ai-response .icon-hadith {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .ai-response .icon-hadith::before {
+    content: '⚬';
+    color: hsl(var(--primary));
+  }
+
+  .ai-response .icon-halal {
+    color: hsl(145 60% 35%);
+  }
+
+  .ai-response .icon-halal::before {
+    content: '✅';
+    margin-left: 0.25rem;
+  }
+
+  .ai-response .icon-haram {
+    color: hsl(0 70% 50%);
+  }
+
+  .ai-response .icon-haram::before {
+    content: '❌';
+    margin-left: 0.25rem;
+  }
+
+  .ai-response .icon-warning {
+    color: hsl(45 90% 45%);
+  }
+
+  .ai-response .icon-warning::before {
+    content: '⚠️';
+    margin-left: 0.25rem;
+  }
+
+  /* Code blocks with Islamic styling */
+  .ai-response pre {
+    background: hsl(var(--muted));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.75rem;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 0.75rem 0;
+  }
+
+  .ai-response code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    background: hsl(var(--muted) / 0.5);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+  }
+
+  /* List styling */
+  .ai-response ul,
+  .ai-response ol {
+    margin: 1rem 0;
+    padding-right: 0;
+    padding-left: 0;
+    direction: rtl;
+  }
+
+  .ai-response ul li {
+    list-style-type: none;
+    position: relative;
+    padding-right: 1.5rem;
+    margin-bottom: 0.5rem;
+    direction: rtl;
+    text-align: right;
+    unicode-bidi: isolate;
+  }
+
+  .ai-response ul li::before {
+    content: '✦';
+    position: absolute;
+    right: 0;
+    color: hsl(var(--primary));
+    font-size: 0.8em;
+    top: 0.4em;
+  }
+
+  .ai-response ol {
+    padding-right: 1.5rem;
+    list-style-type: decimal;
+  }
+
+  .ai-response ol li {
+    margin-bottom: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  /* Headings in AI response */
+  .ai-response h1,
+  .ai-response h2,
+  .ai-response h3,
+  .ai-response h4,
+  .ai-response h5,
+  .ai-response h6 {
+    color: hsl(var(--foreground));
+    margin: 1.25rem 0 0.75rem;
+    font-weight: 700;
+    position: relative;
+  }
+
+  .ai-response h2::before,
+  .ai-response h3::before {
+    content: '✦ ';
+    color: hsl(var(--primary));
+  }
+
+  /* Horizontal rule */
+  .ai-response hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.3), hsl(var(--accent) / 0.3), transparent);
+    margin: 1.5rem 0;
+  }
+
+  /* Footnote numbers in text [١], [٢] etc */
+  .ai-response p,
+  .ai-response li {
+    unicode-bidi: plaintext;
+  }
+
+  /* Strong text styling - Light Mode */
+  .ai-response strong {
+    color: hsl(145 60% 30%);
+    font-weight: 700;
+  }
+
+  /* Strong text styling - Dark Mode */
+  .dark .ai-response strong {
+    color: hsl(145 70% 55%);
+  }
+
+  /* Emphasis styling - Light Mode */
+  .ai-response em {
+    font-style: normal;
+    color: hsl(35 80% 30%);
+    background: hsl(45 80% 85%);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+  }
+
+  /* Emphasis styling - Dark Mode */
+  .dark .ai-response em {
+    color: hsl(45 90% 70%);
+    background: hsl(45 50% 20%);
+  }
+
+  /* Better spacing between sections */
+  .ai-response>*+h2,
+  .ai-response>*+h3 {
+    margin-top: 1.75rem;
+  }
+
+  /* Numbered list for sources */
+  .ai-response ol li,
+  .ai-response ul li {
+    line-height: 1.8;
+  }
+
+  /* Better paragraph spacing */
+  .ai-response p+p {
+    margin-top: 1rem;
+  }
+
+  /* Inline code for references - Light Mode */
+  .ai-response code {
+    font-family: 'Noto Kufi Arabic', sans-serif;
+    font-size: 0.85em;
+    background: hsl(145 40% 90%);
+    color: hsl(145 60% 25%);
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+  }
+
+  /* Inline code for references - Dark Mode */
+  .dark .ai-response code {
+    background: hsl(145 30% 20%);
+    color: hsl(145 60% 60%);
+  }
+
+  /* ============================================
+     SOURCES SECTION - DISTINCTIVE STYLING
+     ============================================ */
+
+  /* Sources section container */
+  .ai-response h2+ul,
+  .ai-response h2+ol,
+  .ai-response h3+ul,
+  .ai-response h3+ol {
+    background: linear-gradient(135deg, hsl(145 30% 95%), hsl(45 30% 95%));
+    border: 2px solid hsl(145 40% 80%);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    margin-top: 0.75rem;
+  }
+
+  /* Sources section - Dark Mode */
+  .dark .ai-response h2+ul,
+  .dark .ai-response h2+ol,
+  .dark .ai-response h3+ul,
+  .dark .ai-response h3+ol {
+    background: linear-gradient(135deg, hsl(150 20% 15%), hsl(45 20% 12%));
+    border-color: hsl(145 30% 25%);
+  }
+
+  /* Sources header styling */
+  .ai-response h2:last-of-type,
+  .ai-response h3:last-of-type {
+    margin-top: 2rem;
+    padding-top: 1.25rem;
+    border-top: 3px solid hsl(145 50% 40%);
+    color: hsl(145 50% 35%);
+  }
+
+  /* Sources header - Dark Mode */
+  .dark .ai-response h2:last-of-type,
+  .dark .ai-response h3:last-of-type {
+    border-top-color: hsl(145 50% 45%);
+    color: hsl(145 50% 55%);
+  }
+
+  /* Sources list items - Each source in its own card */
+  .ai-response h2+ul li,
+  .ai-response h2+ol li,
+  .ai-response h3+ul li,
+  .ai-response h3+ol li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: hsl(0 0% 100%);
+    border: 1px solid hsl(145 30% 80%);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px hsl(0 0% 0% / 0.05);
+  }
+
+  .ai-response h2+ul li:last-child,
+  .ai-response h2+ol li:last-child,
+  .ai-response h3+ul li:last-child,
+  .ai-response h3+ol li:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Sources list items - Dark Mode */
+  .dark .ai-response h2+ul li,
+  .dark .ai-response h2+ol li,
+  .dark .ai-response h3+ul li,
+  .dark .ai-response h3+ol li {
+    background: hsl(150 20% 18%);
+    border-color: hsl(145 25% 30%);
+    box-shadow: 0 1px 3px hsl(0 0% 0% / 0.2);
+  }
+
+  /* Sources list bullets */
+  .ai-response h2+ul li::before,
+  .ai-response h3+ul li::before {
+    content: '📖 ';
+    color: hsl(145 50% 40%);
+  }
+
+  /* Blockquote - Light Mode adjustments */
+  .ai-response blockquote {
+    background: linear-gradient(135deg, hsl(145 30% 95%), hsl(45 40% 95%));
+  }
+
+  /* Blockquote - Dark Mode */
+  .dark .ai-response blockquote {
+    background: linear-gradient(135deg, hsl(150 20% 15%), hsl(45 20% 12%));
+    border-right-color: hsl(45 70% 50%);
+  }
+
+  /* Tables - Dark Mode improvements */
+  .dark .ai-response table {
+    border-color: hsl(145 30% 25%);
+  }
+
+  .dark .ai-response th {
+    background: linear-gradient(135deg, hsl(145 40% 25%), hsl(145 35% 20%));
+    border-color: hsl(145 30% 35%);
+  }
+
+  .dark .ai-response td {
+    border-color: hsl(145 20% 25%);
+  }
+
+  .dark .ai-response tr:nth-child(even) td {
+    background: hsl(150 15% 14%);
+  }
+
+  .dark .ai-response tr:hover td {
+    background: hsl(145 20% 18%);
+  }
+}
