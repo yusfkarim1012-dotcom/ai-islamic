@@ -22,7 +22,7 @@ import { ModelSelector, ResponseMode } from "@/components/ModelSelector";
 import { ListenButton } from "@/components/ListenButton";
 import { callAIMLApi } from "@/lib/aiml-config";
 import { callManusApi } from "@/lib/manus-config";
-import { getModelById } from "@/lib/admin-config";
+import { getModelById, getAdminConfig, CONFIG_UPDATED_EVENT } from "@/lib/admin-config";
 import {
   Sheet,
   SheetContent,
@@ -105,6 +105,25 @@ const Index = () => {
   // Persist responseMode to localStorage
   useEffect(() => {
     localStorage.setItem('aikurdi_response_mode', responseMode);
+  }, [responseMode]);
+
+  // Sync with enabled models when remote configuration changes
+  useEffect(() => {
+    const handleConfigUpdate = () => {
+      console.log("🔄 Index Page: Remote config updated! Validating model selection...");
+      const config = getAdminConfig();
+      const model = config.models.find(m => m.id === responseMode);
+      if (model && !model.enabled) {
+        // Fallback to the first enabled model
+        const firstEnabled = config.models.find(m => m.enabled);
+        if (firstEnabled) {
+          console.log(`Fallback selected model from disabled '${responseMode}' to enabled '${firstEnabled.id}'`);
+          setResponseMode(firstEnabled.id as ResponseMode);
+        }
+      }
+    };
+    window.addEventListener(CONFIG_UPDATED_EVENT, handleConfigUpdate);
+    return () => window.removeEventListener(CONFIG_UPDATED_EVENT, handleConfigUpdate);
   }, [responseMode]);
 
   useEffect(() => {

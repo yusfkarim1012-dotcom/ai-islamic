@@ -1,8 +1,9 @@
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Zap, Brain, Check, Sparkles, MessageSquare, Wand2 } from "lucide-react";
 import { translations } from "@/lib/translations";
-import { getAdminConfig } from "@/lib/admin-config";
+import { getAdminConfig, CONFIG_UPDATED_EVENT } from "@/lib/admin-config";
 
 export type ResponseMode = 'fast' | 'manus';
 
@@ -14,7 +15,18 @@ interface ModelSelectorProps {
 
 export const ModelSelector = ({ currentMode, onSelectMode, lang }: ModelSelectorProps) => {
     const t = translations[lang];
-    const adminConfig = getAdminConfig();
+    
+    // Reactive state to force updates on config changes
+    const [adminConfig, setAdminConfig] = useState(() => getAdminConfig());
+
+    useEffect(() => {
+        const handleConfigUpdate = () => {
+            console.log("🔄 ModelSelector: Remote config updated! Syncing state...");
+            setAdminConfig(getAdminConfig());
+        };
+        window.addEventListener(CONFIG_UPDATED_EVENT, handleConfigUpdate);
+        return () => window.removeEventListener(CONFIG_UPDATED_EVENT, handleConfigUpdate);
+    }, []);
 
     // Get icon based on model id
     const getIcon = (id: string) => {
@@ -42,11 +54,15 @@ export const ModelSelector = ({ currentMode, onSelectMode, lang }: ModelSelector
             const tLabel = t[id as keyof typeof t];
             const tFullLabel = t[`${id}Full` as keyof typeof t];
             
+            // Check if the admin customized the name from the Kurdish/Arabic defaults
+            const isCustomName = model.name !== 'پێشەنگ' && model.name !== 'وردبین' && model.name !== 'الرائد' && model.name !== 'المراقب';
+            const isCustomFullName = model.fullName !== 'مۆدێلی پێشەنگ' && model.fullName !== 'مۆدێلی وردبین' && model.fullName !== 'نموذج الرائد' && model.fullName !== 'نموذج المراقب';
+
             return {
                 id,
                 icon: getIcon(model.id),
-                label: typeof tLabel === 'string' ? tLabel : model.name,
-                fullLabel: typeof tFullLabel === 'string' ? tFullLabel : model.fullName,
+                label: isCustomName ? model.name : (typeof tLabel === 'string' ? tLabel : model.name),
+                fullLabel: isCustomFullName ? model.fullName : (typeof tFullLabel === 'string' ? tFullLabel : model.fullName),
                 color: getColor(model.id)
             };
         });

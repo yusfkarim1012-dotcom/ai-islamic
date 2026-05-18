@@ -21,6 +21,14 @@ export interface AdminConfig {
 
 const ADMIN_CONFIG_KEY = 'aikurdi_admin_config';
 const ADMIN_PASSWORD = '12345678rk'; // Password to access admin panel
+export const CONFIG_UPDATED_EVENT = 'aikurdi_config_updated';
+
+// Helper to notify the app when config changes
+export const dispatchConfigUpdate = () => {
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event(CONFIG_UPDATED_EVENT));
+    }
+};
 
 // Default configuration (fallback when no remote config)
 const defaultConfig: AdminConfig = {
@@ -55,6 +63,7 @@ export const initRemoteConfig = async (): Promise<void> => {
             // Save remote config to localStorage as cache
             localStorage.setItem(ADMIN_CONFIG_KEY, JSON.stringify(remoteConfig));
             console.log('Remote config loaded from Firebase');
+            dispatchConfigUpdate(); // Notify listeners
         } else {
             // No remote config yet - push default config to Firebase
             console.log('No remote config found, pushing defaults to Firebase');
@@ -83,6 +92,7 @@ export const saveAdminConfig = async (config: AdminConfig): Promise<boolean> => 
     try {
         // Save locally first
         localStorage.setItem(ADMIN_CONFIG_KEY, JSON.stringify(config));
+        dispatchConfigUpdate(); // Notify listeners immediately for local UI responsiveness
         // Then save to Firebase so all users get the update
         const success = await saveRemoteConfig(config);
         return success;
