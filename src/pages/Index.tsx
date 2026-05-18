@@ -651,6 +651,24 @@ ${conversationHistory}
                     </Link>
                   </div>
 
+                  {/* Admin Panel Section */}
+                  <div className="rounded-xl border border-primary/10 bg-card/50 p-4 shadow-sm backdrop-blur-sm">
+                    <div className="mb-3 flex items-center gap-2">
+                      <div className="h-1 w-1 rotate-45 bg-accent"></div>
+                      <span className="font-bold text-foreground">
+                        {language === 'ar' ? 'لوحة التحكم' : 'لوحەی تحکم'}
+                      </span>
+                    </div>
+                    <Link to="/admin" className="block">
+                      <Button variant="outline" className="w-full justify-center gap-3 border-primary/20 py-5">
+                        <Settings className="h-5 w-5 text-primary" />
+                        <span className="font-medium">
+                          {language === 'ar' ? 'إدارة النماذج' : 'بەڕێوەبردنی مۆدێلەکان'}
+                        </span>
+                      </Button>
+                    </Link>
+                  </div>
+
                   {/* About Section */}
                   <div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-accent/5 p-4 shadow-sm backdrop-blur-sm">
                     <div className="mb-3 flex items-center gap-2">

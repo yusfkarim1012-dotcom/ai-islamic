@@ -1,5 +1,7 @@
-// Admin Configuration - Stores settings in localStorage
-// This allows the admin to dynamically change models and their names
+// Admin Configuration - Uses Firebase Remote Config + localStorage fallback
+// When admin saves config, it goes to Firebase so ALL users see the change
+
+import { fetchRemoteConfig, saveRemoteConfig } from './firebase-config';
 
 export interface ModelConfig {
     id: string;
@@ -20,7 +22,7 @@ export interface AdminConfig {
 const ADMIN_CONFIG_KEY = 'aikurdi_admin_config';
 const ADMIN_PASSWORD = '12345678rk'; // Password to access admin panel
 
-// Default configuration
+// Default configuration (fallback when no remote config)
 const defaultConfig: AdminConfig = {
     defaultModel: 'manus',
     manusApiKey: 'sk-BcmwiN3gGznjwuAkzNZ86c',
@@ -45,7 +47,25 @@ const defaultConfig: AdminConfig = {
     ]
 };
 
-// Get admin config from localStorage
+// Initialize remote config - call this on app startup
+export const initRemoteConfig = async (): Promise<void> => {
+    try {
+        const remoteConfig = await fetchRemoteConfig();
+        if (remoteConfig) {
+            // Save remote config to localStorage as cache
+            localStorage.setItem(ADMIN_CONFIG_KEY, JSON.stringify(remoteConfig));
+            console.log('Remote config loaded from Firebase');
+        } else {
+            // No remote config yet - push default config to Firebase
+            console.log('No remote config found, pushing defaults to Firebase');
+            await saveRemoteConfig(defaultConfig);
+        }
+    } catch (error) {
+        console.error('Error initializing remote config:', error);
+    }
+};
+
+// Get admin config from localStorage (cached from Firebase)
 export const getAdminConfig = (): AdminConfig => {
     try {
         const stored = localStorage.getItem(ADMIN_CONFIG_KEY);
@@ -58,12 +78,17 @@ export const getAdminConfig = (): AdminConfig => {
     return defaultConfig;
 };
 
-// Save admin config to localStorage
-export const saveAdminConfig = (config: AdminConfig): void => {
+// Save admin config to BOTH localStorage AND Firebase
+export const saveAdminConfig = async (config: AdminConfig): Promise<boolean> => {
     try {
+        // Save locally first
         localStorage.setItem(ADMIN_CONFIG_KEY, JSON.stringify(config));
+        // Then save to Firebase so all users get the update
+        const success = await saveRemoteConfig(config);
+        return success;
     } catch (error) {
         console.error('Error saving admin config:', error);
+        return false;
     }
 };
 
@@ -79,12 +104,12 @@ export const getModelById = (id: string): ModelConfig | undefined => {
 };
 
 // Update a specific model
-export const updateModel = (id: string, updates: Partial<ModelConfig>): void => {
+export const updateModel = async (id: string, updates: Partial<ModelConfig>): Promise<void> => {
     const config = getAdminConfig();
     const modelIndex = config.models.findIndex(m => m.id === id);
     if (modelIndex !== -1) {
         config.models[modelIndex] = { ...config.models[modelIndex], ...updates };
-        saveAdminConfig(config);
+        await saveAdminConfig(config);
     }
 };
 

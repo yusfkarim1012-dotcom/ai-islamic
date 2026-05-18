@@ -42,30 +42,79 @@ export const callManusApi = async (
   try {
     const baseUrl = adminConfig.manusBaseUrl.replace(/\/$/, '');
     const targetUrl = `${baseUrl}/chat/completions`;
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
 
-    const response = await fetch(proxyUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${adminConfig.manusApiKey}`
-      },
-      body: JSON.stringify({
-        model: modelName,
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 4096
-      })
+    const requestBody = JSON.stringify({
+      model: modelName,
+      messages: [
+        {
+          role: 'system',
+          content: systemPrompt
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 4096
     });
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${adminConfig.manusApiKey}`
+    };
+
+    // Check if running in Capacitor (native app) - no CORS issues
+    const isNativeApp = !!(window as any).Capacitor?.isNativePlatform?.();
+
+    let response: Response | null = null;
+
+    if (isNativeApp) {
+      // Native app: direct call, no CORS proxy needed
+      console.log('📱 Native app detected, calling API directly...');
+      response = await fetch(targetUrl, {
+        method: 'POST',
+        headers,
+        body: requestBody
+      });
+    } else {
+      // Web: try direct first, then CORS proxies as fallback
+      const corsProxies = [
+        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+      ];
+
+      // Try direct first (may work on same-origin or relaxed CORS)
+      try {
+        console.log('🌐 Trying direct API call...');
+        response = await fetch(targetUrl, {
+          method: 'POST',
+          headers,
+          body: requestBody
+        });
+      } catch (directError) {
+        console.log('⚠️ Direct call failed, trying CORS proxies...');
+        // Try each proxy
+        for (const proxyUrl of corsProxies) {
+          try {
+            console.log(`🔄 Trying proxy: ${proxyUrl.substring(0, 40)}...`);
+            response = await fetch(proxyUrl, {
+              method: 'POST',
+              headers,
+              body: requestBody
+            });
+            if (response.ok) break;
+          } catch (proxyError) {
+            console.log(`❌ Proxy failed, trying next...`);
+            continue;
+          }
+        }
+      }
+    }
+
+    if (!response) {
+      throw new Error('All API connection methods failed');
+    }
 
     if (!response.ok) {
       const errorText = await response.text();

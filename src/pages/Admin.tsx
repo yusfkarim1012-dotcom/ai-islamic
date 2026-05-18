@@ -36,10 +36,14 @@ const Admin = () => {
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (config) {
-            saveAdminConfig(config);
-            toast.success("ڕێکخستنەکان پاشەکەوت کران");
+            const success = await saveAdminConfig(config);
+            if (success) {
+                toast.success("ڕێکخستنەکان پاشەکەوت کران بۆ هەموو بەکارهێنەران");
+            } else {
+                toast.error("کێشە لە پاشەکەوتکردن. تکایە دووبارە هەوڵبدە.");
+            }
         }
     };
 
