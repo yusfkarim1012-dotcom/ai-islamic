@@ -152,11 +152,24 @@ const Index = () => {
 
     try {
       if (isNativeApp) {
-        // Native app: override window.open to redirect the main webview directly to Puter
-        // This keeps the auth session in the app's webview so it returns successfully
+        // Native app: override window.open to intercept Puter sign-in URL,
+        // redirecting back to our live website, which deep links back to the native app!
         window.open = (url) => {
-          console.log("📱 Native app Puter signIn: redirecting to", url);
-          window.location.href = url || '';
+          if (url) {
+            try {
+              const parsedUrl = new URL(url);
+              // Force the redirect to go to our live production HTTPS domain
+              parsedUrl.searchParams.set('redirect_uri', 'https://aikurdi.web.app/?native_auth=true');
+              const finalUrl = parsedUrl.toString();
+              console.log("📱 Native App Puter login - Opening customized secure URL in system browser:", finalUrl);
+              
+              import('@capacitor/browser').then(({ Browser }) => {
+                Browser.open({ url: finalUrl, windowName: '_blank' });
+              });
+            } catch (err) {
+              console.error("Error modifying Puter URL:", err);
+            }
+          }
           return null;
         };
       }
