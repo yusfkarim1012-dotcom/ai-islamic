@@ -138,7 +138,7 @@ const Admin = () => {
                                     <div key={index} className="flex gap-2 items-center">
                                         <span className="text-xs font-semibold text-muted-foreground w-16 text-right">Key {index + 1}:</span>
                                         <Input
-                                            type="password"
+                                            type="text"
                                             value={config?.manusApiKeys?.[index] || ""}
                                             onChange={(e) => {
                                                 if (config) {
