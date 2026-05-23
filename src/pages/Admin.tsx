@@ -38,7 +38,14 @@ const Admin = () => {
 
     const handleSave = async () => {
         if (config) {
-            const success = await saveAdminConfig(config);
+            const cleanKeys = (config.manusApiKeys || []).map(k => k.trim());
+            const firstActiveKey = cleanKeys.find(k => k !== '') || '';
+            const updatedConfig = {
+                ...config,
+                manusApiKey: firstActiveKey,
+                manusApiKeys: cleanKeys
+            };
+            const success = await saveAdminConfig(updatedConfig);
             if (success) {
                 toast.success("ڕێکخستنەکان پاشەکەوت کران بۆ هەموو بەکارهێنەران");
             } else {
@@ -125,13 +132,28 @@ const Admin = () => {
 
                     <div className="grid gap-4">
                         <div className="space-y-2">
-                            <Label>API Key</Label>
-                            <Input
-                                type="password"
-                                value={config?.manusApiKey || ""}
-                                onChange={(e) => setConfig(prev => prev ? { ...prev, manusApiKey: e.target.value } : null)}
-                                placeholder="sk-..."
-                            />
+                            <Label>کلیلەکانی API (تا ١٠ کلیل - بەپێی ڕیزبەندی کار دەکەن)</Label>
+                            <div className="grid gap-3 max-h-[380px] overflow-y-auto pr-2" dir="ltr">
+                                {Array.from({ length: 10 }).map((_, index) => (
+                                    <div key={index} className="flex gap-2 items-center">
+                                        <span className="text-xs font-semibold text-muted-foreground w-16 text-right">Key {index + 1}:</span>
+                                        <Input
+                                            type="password"
+                                            value={config?.manusApiKeys?.[index] || ""}
+                                            onChange={(e) => {
+                                                if (config) {
+                                                    const newKeys = [...(config.manusApiKeys || [])];
+                                                    while (newKeys.length < 10) newKeys.push('');
+                                                    newKeys[index] = e.target.value;
+                                                    setConfig({ ...config, manusApiKeys: newKeys });
+                                                }
+                                            }}
+                                            placeholder="sk-..."
+                                            className="font-mono text-left text-sm"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         <div className="space-y-2">

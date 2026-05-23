@@ -15,6 +15,7 @@ export interface ModelConfig {
 export interface AdminConfig {
     defaultModel: string;
     manusApiKey: string;
+    manusApiKeys?: string[];
     manusBaseUrl: string;
     models: ModelConfig[];
 }
@@ -34,6 +35,7 @@ export const dispatchConfigUpdate = () => {
 const defaultConfig: AdminConfig = {
     defaultModel: 'manus',
     manusApiKey: 'sk-BcmwiN3gGznjwuAkzNZ86c',
+    manusApiKeys: ['sk-BcmwiN3gGznjwuAkzNZ86c'],
     manusBaseUrl: 'https://api.manus.im/api/llm-proxy/v1',
     models: [
         {
@@ -79,12 +81,26 @@ export const getAdminConfig = (): AdminConfig => {
     try {
         const stored = localStorage.getItem(ADMIN_CONFIG_KEY);
         if (stored) {
-            return { ...defaultConfig, ...JSON.parse(stored) };
+            const config = { ...defaultConfig, ...JSON.parse(stored) };
+            if (!config.manusApiKeys || !Array.isArray(config.manusApiKeys)) {
+                config.manusApiKeys = config.manusApiKey ? [config.manusApiKey] : [];
+            }
+            while (config.manusApiKeys.length < 10) {
+                config.manusApiKeys.push('');
+            }
+            return config;
         }
     } catch (error) {
         console.error('Error loading admin config:', error);
     }
-    return defaultConfig;
+    const config = { ...defaultConfig };
+    if (!config.manusApiKeys || !Array.isArray(config.manusApiKeys)) {
+        config.manusApiKeys = config.manusApiKey ? [config.manusApiKey] : [];
+    }
+    while (config.manusApiKeys.length < 10) {
+        config.manusApiKeys.push('');
+    }
+    return config;
 };
 
 // Save admin config to BOTH localStorage AND Firebase
