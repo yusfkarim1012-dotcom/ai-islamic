@@ -133,7 +133,7 @@ const Admin = () => {
                     <div className="grid gap-4">
                         <div className="space-y-2">
                             <Label>کلیلەکانی API (تا ١٠ کلیل - بەپێی ڕیزبەندی کار دەکەن)</Label>
-                            <div className="grid gap-3 w-full" dir="ltr">
+                            <div className="grid gap-3 max-h-[380px] overflow-y-auto pr-2" dir="ltr">
                                 {Array.from({ length: 10 }).map((_, index) => (
                                     <div key={index} className="flex gap-2 items-center">
                                         <span className="text-xs font-semibold text-muted-foreground w-16 text-right">Key {index + 1}:</span>
@@ -150,6 +150,10 @@ const Admin = () => {
                                             }}
                                             placeholder="sk-..."
                                             className="font-mono text-left text-sm"
+                                            autoComplete="off"
+                                            name={`manus-key-field-${index}`}
+                                            data-lpignore="true"
+                                            data-1pignore="true"
                                         />
                                     </div>
                                 ))}
