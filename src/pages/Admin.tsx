@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { ArrowRight, Lock, Save, Settings } from "lucide-react";
+import { ArrowRight, Lock, Save, Settings, Loader2 } from "lucide-react";
 import {
     getAdminConfig,
     saveAdminConfig,
@@ -20,6 +20,74 @@ const Admin = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [password, setPassword] = useState("");
     const [config, setConfig] = useState<AdminConfig | null>(null);
+    const [testingStatus, setTestingStatus] = useState<Record<string, 'idle' | 'loading' | 'success' | 'failed'>>({});
+
+    const fetchWithCors = async (targetUrl: string, headers: any, requestBody: string): Promise<Response> => {
+        const isNativeApp = !!(window as any).Capacitor?.isNativePlatform?.();
+        if (isNativeApp) {
+            return await fetch(targetUrl, { method: 'POST', headers, body: requestBody });
+        }
+        
+        try {
+            console.log(`🌐 Testing direct API call to ${targetUrl}...`);
+            const response = await fetch(targetUrl, { method: 'POST', headers, body: requestBody });
+            if (response.ok) return response;
+        } catch (directError) {
+            console.log('Direct test failed, trying CORS proxies...');
+        }
+
+        const corsProxies = [
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+        ];
+
+        for (const proxyUrl of corsProxies) {
+            try {
+                const response = await fetch(proxyUrl, { method: 'POST', headers, body: requestBody });
+                if (response.ok) return response;
+            } catch (proxyError) {
+                continue;
+            }
+        }
+        throw new Error('All connection methods failed');
+    };
+
+    const testApiKey = async (provider: 'bluesminds' | 'manus', index: number, key: string, customBaseUrl?: string, customModel?: string) => {
+        if (!key || !key.trim()) return;
+
+        const statusKey = `${provider}-${index}`;
+        setTestingStatus(prev => ({ ...prev, [statusKey]: 'loading' }));
+
+        try {
+            const baseUrl = (customBaseUrl || (provider === 'bluesminds' ? 'https://api.bluesminds.com/v1' : 'https://api.manus.im/api/llm-proxy/v1')).replace(/\/$/, '');
+            const model = customModel || (provider === 'bluesminds' ? 'gemini-2.5-flash' : 'gemini-2.5-flash');
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${key.trim()}`
+            };
+            const requestBody = JSON.stringify({
+                model: model,
+                messages: [{ role: 'user', content: 'Say OK' }],
+                max_tokens: 5
+            });
+
+            const targetUrl = `${baseUrl}/chat/completions`;
+            const response = await fetchWithCors(targetUrl, headers, requestBody);
+            
+            if (response.ok) {
+                setTestingStatus(prev => ({ ...prev, [statusKey]: 'success' }));
+                toast.success(`کلیلەکە بە سەرکەوتوویی تاقیکرایەوە: ${provider === 'bluesminds' ? 'Bluesminds' : 'Manus'} کار دەکات!`);
+            } else {
+                setTestingStatus(prev => ({ ...prev, [statusKey]: 'failed' }));
+                toast.error(`شکستی هێنا: کلیلەکە یاخود سێرڤەرەکە کێشەی هەیە.`);
+            }
+        } catch (err: any) {
+            console.error('API key test error:', err);
+            setTestingStatus(prev => ({ ...prev, [statusKey]: 'failed' }));
+            toast.error(`کێشەی پەیوەندی: کلیلەکە یان ناونیشانی سێرڤەرەکە هەڵەیە.`);
+        }
+    };
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -227,12 +295,30 @@ const Admin = () => {
                                                     }
                                                 }}
                                                 placeholder="sk-..."
-                                                className="font-mono text-left text-sm"
+                                                className="font-mono text-left text-sm flex-1"
                                                 autoComplete="off"
                                                 name={`bluesminds-key-field-${index}`}
                                                 data-lpignore="true"
                                                 data-1pignore="true"
                                             />
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                variant="outline"
+                                                className="h-9 w-24 text-xs shrink-0"
+                                                onClick={() => testApiKey('bluesminds', index, config?.bluesmindsApiKeys?.[index], config?.bluesmindsBaseUrl, config?.bluesmindsModel)}
+                                                disabled={!config?.bluesmindsApiKeys?.[index]?.trim() || testingStatus[`bluesminds-${index}`] === 'loading'}
+                                            >
+                                                {testingStatus[`bluesminds-${index}`] === 'loading' ? (
+                                                    <Loader2 className="animate-spin w-3 h-3" />
+                                                ) : testingStatus[`bluesminds-${index}`] === 'success' ? (
+                                                    "✅ سەرکەوت"
+                                                ) : testingStatus[`bluesminds-${index}`] === 'failed' ? (
+                                                    "❌ شکست"
+                                                ) : (
+                                                    "تاقیکردنەوە"
+                                                )}
+                                            </Button>
                                         </div>
                                     ))}
                                 </div>
@@ -281,12 +367,30 @@ const Admin = () => {
                                                     }
                                                 }}
                                                 placeholder="sk-..."
-                                                className="font-mono text-left text-sm"
+                                                className="font-mono text-left text-sm flex-1"
                                                 autoComplete="off"
                                                 name={`manus-key-field-${index}`}
                                                 data-lpignore="true"
                                                 data-1pignore="true"
                                             />
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                variant="outline"
+                                                className="h-9 w-24 text-xs shrink-0"
+                                                onClick={() => testApiKey('manus', index, config?.manusApiKeys?.[index], config?.manusBaseUrl)}
+                                                disabled={!config?.manusApiKeys?.[index]?.trim() || testingStatus[`manus-${index}`] === 'loading'}
+                                            >
+                                                {testingStatus[`manus-${index}`] === 'loading' ? (
+                                                    <Loader2 className="animate-spin w-3 h-3" />
+                                                ) : testingStatus[`manus-${index}`] === 'success' ? (
+                                                    "✅ سەرکەوت"
+                                                ) : testingStatus[`manus-${index}`] === 'failed' ? (
+                                                    "❌ شکست"
+                                                ) : (
+                                                    "تاقیکردنەوە"
+                                                )}
+                                            </Button>
                                         </div>
                                     ))}
                                 </div>
