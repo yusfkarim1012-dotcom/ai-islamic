@@ -37,120 +37,136 @@ export const callManusApi = async (
   const manusModel = getModelById('manus');
   const modelName = manusModel?.model || 'gemini-2.5-flash';
 
-  console.log(`🔮 Calling Manus API with ${modelName}...`);
-
-  // Get keys to try
-  const keysToTry = (adminConfig.manusApiKeys || [])
-    .map(k => k.trim())
-    .filter(k => k !== '');
-
-  // Fallback to single key if empty
-  if (keysToTry.length === 0 && adminConfig.manusApiKey) {
-    keysToTry.push(adminConfig.manusApiKey.trim());
-  }
-
-  if (keysToTry.length === 0) {
-    throw new Error('سیستەم کلیلێکی دەستنیشانکراوی نییە. تکایە لە لایەنی ئەدمین کلیل دابنێ.');
-  }
+  const isBluesmindsDisabled = adminConfig.serverDisabled === 'bluesminds';
+  const isManusDisabled = adminConfig.serverDisabled === 'manus';
+  const isManusFirst = adminConfig.serverPriority === 'manus_first';
 
   let lastError: any = null;
 
-  for (let i = 0; i < keysToTry.length; i++) {
-    const apiKey = keysToTry[i];
-    console.log(`🔑 Trying Manus API key ${i + 1}/${keysToTry.length}...`);
-
-    try {
-      const baseUrl = adminConfig.manusBaseUrl.replace(/\/$/, '');
-      const targetUrl = `${baseUrl}/chat/completions`;
-
-      const requestBody = JSON.stringify({
-        model: modelName,
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 4096
-      });
-
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      };
-
-      // Check if running in Capacitor (native app) - no CORS issues
-      const isNativeApp = !!(window as any).Capacitor?.isNativePlatform?.();
-
-      let response: Response | null = null;
-
-      if (isNativeApp) {
-        // Native app: direct call, no CORS proxy needed
-        console.log('📱 Native app detected, calling API directly...');
-        response = await fetch(targetUrl, {
-          method: 'POST',
-          headers,
-          body: requestBody
-        });
-      } else {
-        // Web: try direct first, then CORS proxies as fallback
-        const corsProxies = [
-          `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-          `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-        ];
-
-        // Try direct first (may work on same-origin or relaxed CORS)
-        try {
-          console.log('🌐 Trying direct API call...');
-          response = await fetch(targetUrl, {
-            method: 'POST',
-            headers,
-            body: requestBody
-          });
-        } catch (directError) {
-          console.log('⚠️ Direct call failed, trying CORS proxies...');
-          // Try each proxy
-          for (const proxyUrl of corsProxies) {
-            try {
-              console.log(`🔄 Trying proxy: ${proxyUrl.substring(0, 40)}...`);
-              response = await fetch(proxyUrl, {
-                method: 'POST',
-                headers,
-                body: requestBody
-              });
-              if (response.ok) break;
-            } catch (proxyError) {
-              console.log(`❌ Proxy failed, trying next...`);
-              continue;
-            }
-          }
-        }
-      }
-
-      if (!response) {
-        throw new Error('All API connection methods failed');
-      }
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`❌ Manus API error (key index ${i}): ${response.status} - ${errorText}`);
-        throw new Error(`Manus API error: ${response.status} ${response.statusText}`);
-      }
-
-      const data: ManusChatResponse = await response.json();
-      console.log('✅ Manus API responded successfully');
-
-      return data.choices[0]?.message?.content || 'No response received';
-    } catch (error) {
-      console.warn(`❌ Manus API key ${i + 1} failed:`, error);
-      lastError = error;
+  // Helper to fetch using CORS proxies
+  const fetchWithCors = async (targetUrl: string, headers: any, requestBody: string): Promise<Response> => {
+    const isNativeApp = !!(window as any).Capacitor?.isNativePlatform?.();
+    if (isNativeApp) {
+      return await fetch(targetUrl, { method: 'POST', headers, body: requestBody });
     }
-  }
+    
+    // Web: try direct first, then proxies
+    try {
+      console.log(`🌐 Trying direct API call to ${targetUrl}...`);
+      const response = await fetch(targetUrl, { method: 'POST', headers, body: requestBody });
+      if (response.ok) return response;
+    } catch (directError) {
+      console.log('Direct call failed, trying CORS proxies...');
+    }
+
+    const corsProxies = [
+      `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+    ];
+
+    for (const proxyUrl of corsProxies) {
+      try {
+        console.log(`🔄 Trying proxy: ${proxyUrl.substring(0, 40)}...`);
+        const response = await fetch(proxyUrl, { method: 'POST', headers, body: requestBody });
+        if (response.ok) return response;
+      } catch (proxyError) {
+        continue;
+      }
+    }
+    throw new Error('All connection methods failed');
+  };
+
+  const tryBluesminds = async (): Promise<string | null> => {
+    if (isBluesmindsDisabled) {
+      console.log('Bluesminds is disabled by admin, skipping...');
+      return null;
+    }
+    const keys = (adminConfig.bluesmindsApiKeys || [])
+      .map(k => k.trim())
+      .filter(k => k !== '');
+    if (keys.length === 0 && adminConfig.bluesmindsApiKey) {
+      keys.push(adminConfig.bluesmindsApiKey.trim());
+    }
+    if (keys.length === 0) return null;
+
+    for (let i = 0; i < keys.length; i++) {
+      const apiKey = keys[i];
+      try {
+        const baseUrl = (adminConfig.bluesmindsBaseUrl || 'https://api.bluesminds.com/v1').replace(/\/$/, '');
+        console.log(`🔮 Trying Bluesminds API with key ${i + 1}/${keys.length}...`);
+        const response = await fetchWithCors(
+          `${baseUrl}/chat/completions`,
+          { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          JSON.stringify({
+            model: modelName,
+            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: prompt }],
+            temperature: 0.7,
+            max_tokens: 4096
+          })
+        );
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Bluesminds API responded successfully');
+          return data.choices[0]?.message?.content || 'No response received';
+        }
+      } catch (err) {
+        console.warn(`Bluesminds key index ${i} failed:`, err);
+        lastError = err;
+      }
+    }
+    return null;
+  };
+
+  const tryManus = async (): Promise<string | null> => {
+    if (isManusDisabled) {
+      console.log('Manus is disabled by admin, skipping...');
+      return null;
+    }
+    const keys = (adminConfig.manusApiKeys || [])
+      .map(k => k.trim())
+      .filter(k => k !== '');
+    if (keys.length === 0 && adminConfig.manusApiKey) {
+      keys.push(adminConfig.manusApiKey.trim());
+    }
+    if (keys.length === 0) return null;
+
+    for (let i = 0; i < keys.length; i++) {
+      const apiKey = keys[i];
+      try {
+        const baseUrl = (adminConfig.manusBaseUrl || 'https://api.manus.im/api/llm-proxy/v1').replace(/\/$/, '');
+        console.log(`🔮 Trying Manus API with key ${i + 1}/${keys.length}...`);
+        const response = await fetchWithCors(
+          `${baseUrl}/chat/completions`,
+          { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          JSON.stringify({
+            model: modelName,
+            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: prompt }],
+            temperature: 0.7,
+            max_tokens: 4096
+          })
+        );
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Manus API responded successfully');
+          return data.choices[0]?.message?.content || 'No response received';
+        }
+      } catch (err) {
+        console.warn(`Manus key index ${i} failed:`, err);
+        lastError = err;
+      }
+    }
+    return null;
+  };
+
+  const firstTry = isManusFirst ? tryManus : tryBluesminds;
+  const secondTry = isManusFirst ? tryBluesminds : tryManus;
+
+  const result1 = await firstTry();
+  if (result1) return result1;
+
+  console.log('First server failed or disabled, trying second...');
+  const result2 = await secondTry();
+  if (result2) return result2;
 
   throw lastError || new Error('هەموو API کلیلەکان شکستیان هێنا. تکایە دواتر هەوڵ بدەرەوە.');
 };

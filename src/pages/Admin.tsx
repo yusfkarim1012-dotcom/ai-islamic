@@ -38,12 +38,18 @@ const Admin = () => {
 
     const handleSave = async () => {
         if (config) {
-            const cleanKeys = (config.manusApiKeys || []).map(k => k.trim());
-            const firstActiveKey = cleanKeys.find(k => k !== '') || '';
+            const cleanManusKeys = (config.manusApiKeys || []).map(k => k.trim());
+            const firstActiveManusKey = cleanManusKeys.find(k => k !== '') || '';
+            
+            const cleanBluesmindsKeys = (config.bluesmindsApiKeys || []).map(k => k.trim());
+            const firstActiveBluesmindsKey = cleanBluesmindsKeys.find(k => k !== '') || '';
+            
             const updatedConfig = {
                 ...config,
-                manusApiKey: firstActiveKey,
-                manusApiKeys: cleanKeys
+                manusApiKey: firstActiveManusKey,
+                manusApiKeys: cleanManusKeys,
+                bluesmindsApiKey: firstActiveBluesmindsKey,
+                bluesmindsApiKeys: cleanBluesmindsKeys
             };
             const success = await saveAdminConfig(updatedConfig);
             if (success) {
@@ -125,6 +131,117 @@ const Admin = () => {
                         </Button>
                     </div>
                 </div>
+
+                {/* Server Controls */}
+                <Card className="p-6 space-y-4">
+                    <h2 className="text-lg font-bold border-b pb-2">🎛️ کۆنتڕۆڵی سێرڤەرەکان (Server Controls)</h2>
+                    
+                    {/* Server Disable Toggle */}
+                    <div className="space-y-2">
+                        <Label className="text-sm font-bold block">کوژاندنەوەی سێرڤەر (Disable Server)</Label>
+                        <div className="flex rounded-lg overflow-hidden border border-input bg-background">
+                            {[
+                                { value: "", label: "هیچ کام نەکوژێنە" },
+                                { value: "bluesminds", label: "Bluesminds بکوژێنە" },
+                                { value: "manus", label: "Manus بکوژێنە" },
+                            ].map((opt) => (
+                                <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => {
+                                        if (config) {
+                                            setConfig({ ...config, serverDisabled: opt.value });
+                                        }
+                                    }}
+                                    className={`flex-1 py-2 text-xs font-bold transition-all duration-200 ${
+                                        config?.serverDisabled === opt.value
+                                            ? "bg-primary text-primary-foreground"
+                                            : "hover:bg-muted text-foreground"
+                                    }`}
+                                    style={{ borderLeft: opt.value !== "" ? "1px solid var(--border)" : "none" }}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground">کاتێک سێرڤەرێک بکوژێنیت، داواکاری API بۆ ئەو سێرڤەرە نانێردرێت و ڕاستەوخۆ دەچێتە سێرڤەری دواتر.</p>
+                    </div>
+
+                    {/* Server Priority Toggle */}
+                    <div className="space-y-2">
+                        <Label className="text-sm font-bold block">ڕیزبەندی سێرڤەر (Server Priority)</Label>
+                        <div className="flex rounded-lg overflow-hidden border border-input bg-background">
+                            {[
+                                { value: "bluesminds_first", label: "Bluesminds یەکەم" },
+                                { value: "manus_first", label: "Manus یەکەم" },
+                            ].map((opt) => (
+                                <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => {
+                                        if (config) {
+                                            setConfig({ ...config, serverPriority: opt.value });
+                                        }
+                                    }}
+                                    className={`flex-1 py-2 text-xs font-bold transition-all duration-200 ${
+                                        config?.serverPriority === opt.value
+                                            ? "bg-primary text-primary-foreground"
+                                            : "hover:bg-muted text-foreground"
+                                    }`}
+                                    style={{ borderLeft: opt.value !== "bluesminds_first" ? "1px solid var(--border)" : "none" }}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground">ئەمە ڕێژەی سەرەکی دیاری دەکات کە کام سێرڤەر یەکەم جار وەڵام بداتەوە.</p>
+                    </div>
+                </Card>
+
+                {/* Bluesminds API Settings */}
+                <Card className="p-6 space-y-4">
+                    <h2 className="text-lg font-bold border-b pb-2">ڕێکخستنی Bluesminds API</h2>
+
+                    <div className="grid gap-4">
+                        <div className="space-y-2">
+                            <Label>کلیلەکانی API (تا ١٠ کلیل - بەپێی ڕیزبەندی کار دەکەن)</Label>
+                            <div className="grid gap-3 max-h-[380px] overflow-y-auto pr-2" dir="ltr">
+                                {Array.from({ length: 10 }).map((_, index) => (
+                                    <div key={index} className="flex gap-2 items-center">
+                                        <span className="text-xs font-semibold text-muted-foreground w-16 text-right">Key {index + 1}:</span>
+                                        <Input
+                                            type="text"
+                                            value={config?.bluesmindsApiKeys?.[index] || ""}
+                                            onChange={(e) => {
+                                                if (config) {
+                                                    const newKeys = [...(config.bluesmindsApiKeys || [])];
+                                                    while (newKeys.length < 10) newKeys.push('');
+                                                    newKeys[index] = e.target.value;
+                                                    setConfig({ ...config, bluesmindsApiKeys: newKeys });
+                                                }
+                                            }}
+                                            placeholder="sk-..."
+                                            className="font-mono text-left text-sm"
+                                            autoComplete="off"
+                                            name={`bluesminds-key-field-${index}`}
+                                            data-lpignore="true"
+                                            data-1pignore="true"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Base URL</Label>
+                            <Input
+                                value={config?.bluesmindsBaseUrl || ""}
+                                onChange={(e) => setConfig(prev => prev ? { ...prev, bluesmindsBaseUrl: e.target.value } : null)}
+                                placeholder="https://api.bluesminds.com/v1"
+                            />
+                        </div>
+                    </div>
+                </Card>
 
                 {/* API Settings */}
                 <Card className="p-6 space-y-4">

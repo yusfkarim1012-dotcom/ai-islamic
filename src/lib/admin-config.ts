@@ -17,6 +17,11 @@ export interface AdminConfig {
     manusApiKey: string;
     manusApiKeys?: string[];
     manusBaseUrl: string;
+    bluesmindsApiKey: string;
+    bluesmindsApiKeys?: string[];
+    bluesmindsBaseUrl: string;
+    serverDisabled?: string;
+    serverPriority?: string;
     models: ModelConfig[];
 }
 
@@ -37,6 +42,11 @@ const defaultConfig: AdminConfig = {
     manusApiKey: 'sk-BcmwiN3gGznjwuAkzNZ86c',
     manusApiKeys: ['sk-BcmwiN3gGznjwuAkzNZ86c'],
     manusBaseUrl: 'https://api.manus.im/api/llm-proxy/v1',
+    bluesmindsApiKey: 'VFnpPZlpu0iFyQkJtHF7HNfjjmn5FXJd9K2BV',
+    bluesmindsApiKeys: ['VFnpPZlpu0iFyQkJtHF7HNfjjmn5FXJd9K2BV'],
+    bluesmindsBaseUrl: 'https://api.bluesminds.com/v1',
+    serverDisabled: '',
+    serverPriority: 'bluesminds_first',
     models: [
         {
             id: 'manus',
@@ -88,6 +98,14 @@ export const getAdminConfig = (): AdminConfig => {
             while (config.manusApiKeys.length < 10) {
                 config.manusApiKeys.push('');
             }
+            if (!config.bluesmindsApiKeys || !Array.isArray(config.bluesmindsApiKeys)) {
+                config.bluesmindsApiKeys = config.bluesmindsApiKey ? [config.bluesmindsApiKey] : [];
+            }
+            while (config.bluesmindsApiKeys.length < 10) {
+                config.bluesmindsApiKeys.push('');
+            }
+            if (config.serverDisabled === undefined) config.serverDisabled = '';
+            if (config.serverPriority === undefined) config.serverPriority = 'bluesminds_first';
             return config;
         }
     } catch (error) {
@@ -99,6 +117,12 @@ export const getAdminConfig = (): AdminConfig => {
     }
     while (config.manusApiKeys.length < 10) {
         config.manusApiKeys.push('');
+    }
+    if (!config.bluesmindsApiKeys || !Array.isArray(config.bluesmindsApiKeys)) {
+        config.bluesmindsApiKeys = config.bluesmindsApiKey ? [config.bluesmindsApiKey] : [];
+    }
+    while (config.bluesmindsApiKeys.length < 10) {
+        config.bluesmindsApiKeys.push('');
     }
     return config;
 };
