@@ -313,7 +313,7 @@ const Admin = () => {
                     {config?.models.map((model) => (
                         <Card key={model.id} className="p-6 space-y-4">
                             <div className="flex items-center justify-between border-b pb-2">
-                                <h3 className="text-lg font-bold text-primary">ڕێکخستنی مۆدێلی {model.fullName} ({model.id})</h3>
+                                <h3 className="text-lg font-bold text-primary">ڕێکخستنی {model.fullName} ({model.id})</h3>
                                 <div className="flex items-center gap-2">
                                     <Label>چالاک</Label>
                                     <Switch
@@ -323,7 +323,7 @@ const Admin = () => {
                                 </div>
                             </div>
 
-                            <div className="grid md:grid-cols-2 gap-4">
+                            <div className="grid md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                     <Label>ناوی کورت (لە هیدەر)</Label>
                                     <Input
