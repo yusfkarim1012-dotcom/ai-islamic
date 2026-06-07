@@ -132,217 +132,227 @@ const Admin = () => {
                     </div>
                 </div>
 
-                {/* Server Controls */}
-                <Card className="p-6 space-y-4">
-                    <h2 className="text-lg font-bold border-b pb-2">🎛️ کۆنتڕۆڵی سێرڤەرەکان (Server Controls)</h2>
-                    
-                    {/* Server Disable Toggle */}
-                    <div className="space-y-2">
-                        <Label className="text-sm font-bold block">کوژاندنەوەی سێرڤەر (Disable Server)</Label>
-                        <div className="flex rounded-lg overflow-hidden border border-input bg-background">
-                            {[
-                                { value: "", label: "هیچ کام نەکوژێنە" },
-                                { value: "bluesminds", label: "Bluesminds بکوژێنە" },
-                                { value: "manus", label: "Manus بکوژێنە" },
-                            ].map((opt) => (
-                                <button
-                                    key={opt.value}
-                                    type="button"
-                                    onClick={() => {
-                                        if (config) {
-                                            setConfig({ ...config, serverDisabled: opt.value });
-                                        }
-                                    }}
-                                    className={`flex-1 py-2 text-xs font-bold transition-all duration-200 ${
-                                        config?.serverDisabled === opt.value
-                                            ? "bg-primary text-primary-foreground"
-                                            : "hover:bg-muted text-foreground"
-                                    }`}
-                                    style={{ borderLeft: opt.value !== "" ? "1px solid var(--border)" : "none" }}
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
-                        </div>
-                        <p className="text-xs text-muted-foreground">کاتێک سێرڤەرێک بکوژێنیت، داواکاری API بۆ ئەو سێرڤەرە نانێردرێت و ڕاستەوخۆ دەچێتە سێرڤەری دواتر.</p>
-                    </div>
+                {/* Section 1: Server and API Key Controls */}
+                <div className="space-y-4">
+                    <h2 className="text-xl font-bold text-foreground/80 border-r-4 border-primary pr-3 py-1 bg-primary/5 rounded-l">
+                        🔌 کلیلەکانی API و کۆنتڕۆڵی سێرڤەرەکان (Servers & API Keys)
+                    </h2>
 
-                    {/* Server Priority Toggle */}
-                    <div className="space-y-2">
-                        <Label className="text-sm font-bold block">ڕیزبەندی سێرڤەر (Server Priority)</Label>
-                        <div className="flex rounded-lg overflow-hidden border border-input bg-background">
-                            {[
-                                { value: "bluesminds_first", label: "Bluesminds یەکەم" },
-                                { value: "manus_first", label: "Manus یەکەم" },
-                            ].map((opt) => (
-                                <button
-                                    key={opt.value}
-                                    type="button"
-                                    onClick={() => {
-                                        if (config) {
-                                            setConfig({ ...config, serverPriority: opt.value });
-                                        }
-                                    }}
-                                    className={`flex-1 py-2 text-xs font-bold transition-all duration-200 ${
-                                        config?.serverPriority === opt.value
-                                            ? "bg-primary text-primary-foreground"
-                                            : "hover:bg-muted text-foreground"
-                                    }`}
-                                    style={{ borderLeft: opt.value !== "bluesminds_first" ? "1px solid var(--border)" : "none" }}
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
-                        </div>
-                        <p className="text-xs text-muted-foreground">ئەمە ڕێژەی سەرەکی دیاری دەکات کە کام سێرڤەر یەکەم جار وەڵام بداتەوە.</p>
-                    </div>
-                </Card>
-
-                {/* Bluesminds API Settings */}
-                <Card className="p-6 space-y-4">
-                    <h2 className="text-lg font-bold border-b pb-2">ڕێکخستنی Bluesminds API</h2>
-
-                    <div className="grid gap-4">
+                    {/* Server Controls */}
+                    <Card className="p-6 space-y-4">
+                        <h3 className="text-lg font-bold border-b pb-2">🎛️ کۆنتڕۆڵی سێرڤەرەکان (Server Controls)</h3>
+                        
+                        {/* Server Disable Toggle */}
                         <div className="space-y-2">
-                            <Label>کلیلەکانی API (تا ١٠ کلیل - بەپێی ڕیزبەندی کار دەکەن)</Label>
-                            <div className="grid gap-3 max-h-[380px] overflow-y-auto pr-2" dir="ltr">
-                                {Array.from({ length: 10 }).map((_, index) => (
-                                    <div key={index} className="flex gap-2 items-center">
-                                        <span className="text-xs font-semibold text-muted-foreground w-16 text-right">Key {index + 1}:</span>
-                                        <Input
-                                            type="text"
-                                            value={config?.bluesmindsApiKeys?.[index] || ""}
-                                            onChange={(e) => {
-                                                if (config) {
-                                                    const newKeys = [...(config.bluesmindsApiKeys || [])];
-                                                    while (newKeys.length < 10) newKeys.push('');
-                                                    newKeys[index] = e.target.value;
-                                                    setConfig({ ...config, bluesmindsApiKeys: newKeys });
-                                                }
-                                            }}
-                                            placeholder="sk-..."
-                                            className="font-mono text-left text-sm"
-                                            autoComplete="off"
-                                            name={`bluesminds-key-field-${index}`}
-                                            data-lpignore="true"
-                                            data-1pignore="true"
-                                        />
-                                    </div>
+                            <Label className="text-sm font-bold block">کوژاندنەوەی سێرڤەر (Disable Server)</Label>
+                            <div className="flex rounded-lg overflow-hidden border border-input bg-background">
+                                {[
+                                    { value: "", label: "هیچ کام نەکوژێنە" },
+                                    { value: "bluesminds", label: "Bluesminds بکوژێنە" },
+                                    { value: "manus", label: "Manus بکوژێنە" },
+                                ].map((opt) => (
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        onClick={() => {
+                                            if (config) {
+                                                setConfig({ ...config, serverDisabled: opt.value });
+                                            }
+                                        }}
+                                        className={`flex-1 py-2 text-xs font-bold transition-all duration-200 ${
+                                            config?.serverDisabled === opt.value
+                                                ? "bg-primary text-primary-foreground"
+                                                : "hover:bg-muted text-foreground"
+                                        }`}
+                                        style={{ borderLeft: opt.value !== "" ? "1px solid var(--border)" : "none" }}
+                                    >
+                                        {opt.label}
+                                    </button>
                                 ))}
                             </div>
+                            <p className="text-xs text-muted-foreground">کاتێک سێرڤەرێک بکوژێنیت، داواکاری API بۆ ئەو سێرڤەرە نانێردرێت و ڕاستەوخۆ دەچێتە سێرڤەری دواتر.</p>
                         </div>
 
+                        {/* Server Priority Toggle */}
                         <div className="space-y-2">
-                            <Label>Base URL</Label>
-                            <Input
-                                value={config?.bluesmindsBaseUrl || ""}
-                                onChange={(e) => setConfig(prev => prev ? { ...prev, bluesmindsBaseUrl: e.target.value } : null)}
-                                placeholder="https://api.bluesminds.com/v1"
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label>ناوی مۆدێل (Bluesminds Model Name)</Label>
-                            <Input
-                                value={config?.bluesmindsModel || ""}
-                                onChange={(e) => setConfig(prev => prev ? { ...prev, bluesmindsModel: e.target.value } : null)}
-                                placeholder="gemini-2.5-flash"
-                            />
-                        </div>
-                    </div>
-                </Card>
-
-                {/* API Settings */}
-                <Card className="p-6 space-y-4">
-                    <h2 className="text-lg font-bold border-b pb-2">ڕێکخستنی Manus API</h2>
-
-                    <div className="grid gap-4">
-                        <div className="space-y-2">
-                            <Label>کلیلەکانی API (تا ١٠ کلیل - بەپێی ڕیزبەندی کار دەکەن)</Label>
-                            <div className="grid gap-3 max-h-[380px] overflow-y-auto pr-2" dir="ltr">
-                                {Array.from({ length: 10 }).map((_, index) => (
-                                    <div key={index} className="flex gap-2 items-center">
-                                        <span className="text-xs font-semibold text-muted-foreground w-16 text-right">Key {index + 1}:</span>
-                                        <Input
-                                            type="text"
-                                            value={config?.manusApiKeys?.[index] || ""}
-                                            onChange={(e) => {
-                                                if (config) {
-                                                    const newKeys = [...(config.manusApiKeys || [])];
-                                                    while (newKeys.length < 10) newKeys.push('');
-                                                    newKeys[index] = e.target.value;
-                                                    setConfig({ ...config, manusApiKeys: newKeys });
-                                                }
-                                            }}
-                                            placeholder="sk-..."
-                                            className="font-mono text-left text-sm"
-                                            autoComplete="off"
-                                            name={`manus-key-field-${index}`}
-                                            data-lpignore="true"
-                                            data-1pignore="true"
-                                        />
-                                    </div>
+                            <Label className="text-sm font-bold block">ڕیزبەندی سێرڤەر (Server Priority)</Label>
+                            <div className="flex rounded-lg overflow-hidden border border-input bg-background">
+                                {[
+                                    { value: "bluesminds_first", label: "Bluesminds یەکەم" },
+                                    { value: "manus_first", label: "Manus یەکەم" },
+                                ].map((opt) => (
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        onClick={() => {
+                                            if (config) {
+                                                setConfig({ ...config, serverPriority: opt.value });
+                                            }
+                                        }}
+                                        className={`flex-1 py-2 text-xs font-bold transition-all duration-200 ${
+                                            config?.serverPriority === opt.value
+                                                ? "bg-primary text-primary-foreground"
+                                                : "hover:bg-muted text-foreground"
+                                        }`}
+                                        style={{ borderLeft: opt.value !== "bluesminds_first" ? "1px solid var(--border)" : "none" }}
+                                    >
+                                        {opt.label}
+                                    </button>
                                 ))}
                             </div>
+                            <p className="text-xs text-muted-foreground">ئەمە ڕێژەی سەرەکی دیاری دەکات کە کام سێرڤەر یەکەم جار وەڵام بداتەوە.</p>
                         </div>
+                    </Card>
 
-                        <div className="space-y-2">
-                            <Label>Base URL</Label>
-                            <Input
-                                value={config?.manusBaseUrl || ""}
-                                onChange={(e) => setConfig(prev => prev ? { ...prev, manusBaseUrl: e.target.value } : null)}
-                                placeholder="https://api.manus.im/api/llm-proxy/v1"
-                            />
+                    {/* Bluesminds API Settings */}
+                    <Card className="p-6 space-y-4">
+                        <h3 className="text-lg font-bold border-b pb-2">🔑 ڕێکخستنی Bluesminds API</h3>
+
+                        <div className="grid gap-4">
+                            <div className="space-y-2">
+                                <Label>کلیلەکانی API (تا ١٠ کلیل - بەپێی ڕیزبەندی کار دەکەن)</Label>
+                                <div className="grid gap-3 max-h-[380px] overflow-y-auto pr-2" dir="ltr">
+                                    {Array.from({ length: 10 }).map((_, index) => (
+                                        <div key={index} className="flex gap-2 items-center">
+                                            <span className="text-xs font-semibold text-muted-foreground w-16 text-right">Key {index + 1}:</span>
+                                            <Input
+                                                type="text"
+                                                value={config?.bluesmindsApiKeys?.[index] || ""}
+                                                onChange={(e) => {
+                                                    if (config) {
+                                                        const newKeys = [...(config.bluesmindsApiKeys || [])];
+                                                        while (newKeys.length < 10) newKeys.push('');
+                                                        newKeys[index] = e.target.value;
+                                                        setConfig({ ...config, bluesmindsApiKeys: newKeys });
+                                                    }
+                                                }}
+                                                placeholder="sk-..."
+                                                className="font-mono text-left text-sm"
+                                                autoComplete="off"
+                                                name={`bluesminds-key-field-${index}`}
+                                                data-lpignore="true"
+                                                data-1pignore="true"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>Base URL</Label>
+                                <Input
+                                    value={config?.bluesmindsBaseUrl || ""}
+                                    onChange={(e) => setConfig(prev => prev ? { ...prev, bluesmindsBaseUrl: e.target.value } : null)}
+                                    placeholder="https://api.bluesminds.com/v1"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>ناوی مۆدێل (Bluesminds Model Name)</Label>
+                                <Input
+                                    value={config?.bluesmindsModel || ""}
+                                    onChange={(e) => setConfig(prev => prev ? { ...prev, bluesmindsModel: e.target.value } : null)}
+                                    placeholder="gemini-2.5-flash"
+                                />
+                            </div>
                         </div>
-                    </div>
-                </Card>
+                    </Card>
 
-                {/* Models */}
-                <Card className="p-6 space-y-4">
-                    <h2 className="text-lg font-bold border-b pb-2">مۆدێلەکان</h2>
+                    {/* Manus API Settings */}
+                    <Card className="p-6 space-y-4">
+                        <h3 className="text-lg font-bold border-b pb-2">🔑 ڕێکخستنی Manus API</h3>
 
-                    <div className="space-y-6">
-                        {config?.models.map((model) => (
-                            <div key={model.id} className="p-4 border rounded-lg space-y-4 bg-muted/30">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="font-bold text-primary">{model.id}</h3>
-                                    <div className="flex items-center gap-2">
-                                        <Label>چالاک</Label>
-                                        <Switch
-                                            checked={model.enabled}
-                                            onCheckedChange={(checked) => updateModelField(model.id, 'enabled', checked)}
-                                        />
-                                    </div>
+                        <div className="grid gap-4">
+                            <div className="space-y-2">
+                                <Label>کلیلەکانی API (تا ١٠ کلیل - بەپێی ڕیزبەندی کار دەکەن)</Label>
+                                <div className="grid gap-3 max-h-[380px] overflow-y-auto pr-2" dir="ltr">
+                                    {Array.from({ length: 10 }).map((_, index) => (
+                                        <div key={index} className="flex gap-2 items-center">
+                                            <span className="text-xs font-semibold text-muted-foreground w-16 text-right">Key {index + 1}:</span>
+                                            <Input
+                                                type="text"
+                                                value={config?.manusApiKeys?.[index] || ""}
+                                                onChange={(e) => {
+                                                    if (config) {
+                                                        const newKeys = [...(config.manusApiKeys || [])];
+                                                        while (newKeys.length < 10) newKeys.push('');
+                                                        newKeys[index] = e.target.value;
+                                                        setConfig({ ...config, manusApiKeys: newKeys });
+                                                    }
+                                                }}
+                                                placeholder="sk-..."
+                                                className="font-mono text-left text-sm"
+                                                autoComplete="off"
+                                                name={`manus-key-field-${index}`}
+                                                data-lpignore="true"
+                                                data-1pignore="true"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>Base URL</Label>
+                                <Input
+                                    value={config?.manusBaseUrl || ""}
+                                    onChange={(e) => setConfig(prev => prev ? { ...prev, manusBaseUrl: e.target.value } : null)}
+                                    placeholder="https://api.manus.im/api/llm-proxy/v1"
+                                />
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+
+                {/* Section 2: Model Configuration */}
+                <div className="space-y-4 pt-6">
+                    <h2 className="text-xl font-bold text-foreground/80 border-r-4 border-primary pr-3 py-1 bg-primary/5 rounded-l">
+                        🤖 ڕێکخستنی مۆدێلەکان (Model Configurations)
+                    </h2>
+
+                    {config?.models.map((model) => (
+                        <Card key={model.id} className="p-6 space-y-4">
+                            <div className="flex items-center justify-between border-b pb-2">
+                                <h3 className="text-lg font-bold text-primary">ڕێکخستنی مۆدێلی {model.fullName} ({model.id})</h3>
+                                <div className="flex items-center gap-2">
+                                    <Label>چالاک</Label>
+                                    <Switch
+                                        checked={model.enabled}
+                                        onCheckedChange={(checked) => updateModelField(model.id, 'enabled', checked)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>ناوی کورت (لە هیدەر)</Label>
+                                    <Input
+                                        value={model.name}
+                                        onChange={(e) => updateModelField(model.id, 'name', e.target.value)}
+                                    />
                                 </div>
 
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label>ناوی کورت (لە هیدەر)</Label>
-                                        <Input
-                                            value={model.name}
-                                            onChange={(e) => updateModelField(model.id, 'name', e.target.value)}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label>ناوی تەواو</Label>
-                                        <Input
-                                            value={model.fullName}
-                                            onChange={(e) => updateModelField(model.id, 'fullName', e.target.value)}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label>ناوی مۆدێل (API)</Label>
-                                        <Input
-                                            value={model.model}
-                                            onChange={(e) => updateModelField(model.id, 'model', e.target.value)}
-                                        />
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label>ناوی تەواو</Label>
+                                    <Input
+                                        value={model.fullName}
+                                        onChange={(e) => updateModelField(model.id, 'fullName', e.target.value)}
+                                    />
                                 </div>
 
+                                <div className="space-y-2">
+                                    <Label>ناوی مۆدێل لەسەر API (Model ID)</Label>
+                                    <Input
+                                        value={model.model}
+                                        onChange={(e) => updateModelField(model.id, 'model', e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 pt-2 border-t">
+                                <Label className="text-sm font-semibold block mb-1">جۆری API بۆ ئەم مۆدێلە:</Label>
                                 <div className="flex gap-4">
-                                    <Label className="flex items-center gap-2">
+                                    <Label className="flex items-center gap-2 cursor-pointer">
                                         <input
                                             type="radio"
                                             name={`apiType-${model.id}`}
@@ -351,7 +361,7 @@ const Admin = () => {
                                         />
                                         Manus API
                                     </Label>
-                                    <Label className="flex items-center gap-2">
+                                    <Label className="flex items-center gap-2 cursor-pointer">
                                         <input
                                             type="radio"
                                             name={`apiType-${model.id}`}
@@ -360,7 +370,7 @@ const Admin = () => {
                                         />
                                         Bluesminds API
                                     </Label>
-                                    <Label className="flex items-center gap-2">
+                                    <Label className="flex items-center gap-2 cursor-pointer">
                                         <input
                                             type="radio"
                                             name={`apiType-${model.id}`}
@@ -371,28 +381,28 @@ const Admin = () => {
                                     </Label>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                </Card>
+                        </Card>
+                    ))}
 
-                {/* Default Model */}
-                <Card className="p-6 space-y-4">
-                    <h2 className="text-lg font-bold border-b pb-2">مۆدێلی گریمانەیی</h2>
+                    {/* Default Model */}
+                    <Card className="p-6 space-y-4">
+                        <h3 className="text-lg font-bold border-b pb-2">مۆدێلی گریمانەیی (Default Model)</h3>
 
-                    <div className="flex gap-4">
-                        {config?.models.map((model) => (
-                            <Label key={model.id} className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="defaultModel"
-                                    checked={config.defaultModel === model.id}
-                                    onChange={() => setConfig(prev => prev ? { ...prev, defaultModel: model.id } : null)}
-                                />
-                                {model.fullName}
-                            </Label>
-                        ))}
-                    </div>
-                </Card>
+                        <div className="flex gap-4">
+                            {config?.models.map((model) => (
+                                <Label key={model.id} className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="defaultModel"
+                                        checked={config.defaultModel === model.id}
+                                        onChange={() => setConfig(prev => prev ? { ...prev, defaultModel: model.id } : null)}
+                                    />
+                                    {model.fullName}
+                                </Label>
+                            ))}
+                        </div>
+                    </Card>
+                </div>
             </div>
         </div>
     );
