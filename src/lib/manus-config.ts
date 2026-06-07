@@ -98,7 +98,7 @@ export const callManusApi = async (
           `${baseUrl}/chat/completions`,
           { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
           JSON.stringify({
-            model: modelName,
+            model: adminConfig.bluesmindsModel || 'gemini-2.5-flash',
             messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: prompt }],
             temperature: 0.7,
             max_tokens: 4096

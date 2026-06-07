@@ -20,6 +20,7 @@ export interface AdminConfig {
     bluesmindsApiKey: string;
     bluesmindsApiKeys?: string[];
     bluesmindsBaseUrl: string;
+    bluesmindsModel?: string;
     serverDisabled?: string;
     serverPriority?: string;
     models: ModelConfig[];
@@ -45,6 +46,7 @@ const defaultConfig: AdminConfig = {
     bluesmindsApiKey: 'VFnpPZlpu0iFyQkJtHF7HNfjjmn5FXJd9K2BV',
     bluesmindsApiKeys: ['VFnpPZlpu0iFyQkJtHF7HNfjjmn5FXJd9K2BV'],
     bluesmindsBaseUrl: 'https://api.bluesminds.com/v1',
+    bluesmindsModel: 'gemini-2.5-flash',
     serverDisabled: '',
     serverPriority: 'bluesminds_first',
     models: [
@@ -104,6 +106,7 @@ export const getAdminConfig = (): AdminConfig => {
             while (config.bluesmindsApiKeys.length < 10) {
                 config.bluesmindsApiKeys.push('');
             }
+            if (config.bluesmindsModel === undefined) config.bluesmindsModel = 'gemini-2.5-flash';
             if (config.serverDisabled === undefined) config.serverDisabled = '';
             if (config.serverPriority === undefined) config.serverPriority = 'bluesminds_first';
             return config;

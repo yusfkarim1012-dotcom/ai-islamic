@@ -240,6 +240,15 @@ const Admin = () => {
                                 placeholder="https://api.bluesminds.com/v1"
                             />
                         </div>
+
+                        <div className="space-y-2">
+                            <Label>ناوی مۆدێل (Bluesminds Model Name)</Label>
+                            <Input
+                                value={config?.bluesmindsModel || ""}
+                                onChange={(e) => setConfig(prev => prev ? { ...prev, bluesmindsModel: e.target.value } : null)}
+                                placeholder="gemini-2.5-flash"
+                            />
+                        </div>
                     </div>
                 </Card>
 
