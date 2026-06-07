@@ -8,7 +8,7 @@ export interface ModelConfig {
     name: string;
     fullName: string;
     enabled: boolean;
-    apiType: 'manus' | 'puter';
+    apiType: 'manus' | 'puter' | 'bluesminds';
     model: string;
 }
 
@@ -56,6 +56,14 @@ const defaultConfig: AdminConfig = {
             fullName: 'مۆدێلی پێشەنگ',
             enabled: true,
             apiType: 'manus',
+            model: 'gemini-2.5-flash'
+        },
+        {
+            id: 'bluesminds',
+            name: 'بلوزمایندز',
+            fullName: 'مۆدێلی بلوزمایندز',
+            enabled: true,
+            apiType: 'bluesminds',
             model: 'gemini-2.5-flash'
         },
         {

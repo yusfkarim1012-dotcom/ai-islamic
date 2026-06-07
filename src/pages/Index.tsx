@@ -366,8 +366,11 @@ const Index = () => {
       const systemPrompt = language === 'ar' ? systemPromptAr : systemPromptKu;
 
 
-      // Prevent Puter from auto-opening login in a new tab (only for fast mode which uses Puter)
-      if (responseMode === 'fast' && !window.puter?.auth?.isSignedIn?.()) {
+      const selectedModel = getModelById(responseMode);
+      const apiType = selectedModel?.apiType || (responseMode === 'fast' ? 'puter' : responseMode === 'bluesminds' ? 'bluesminds' : 'manus');
+
+      // Prevent Puter from auto-opening login in a new tab (only for modes using Puter API)
+      if (apiType === 'puter' && !window.puter?.auth?.isSignedIn?.()) {
         const authMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: "assistant",
@@ -393,10 +396,9 @@ ${conversationHistory}
       let response;
       let messageContent: string;
 
-      if (responseMode === 'fast') {
+      if (apiType === 'puter') {
         // Use Puter API - ONLY use the model from admin config, no fallbacks
-        const fastModel = getModelById('fast');
-        const modelName = fastModel?.model || 'gemini-3-flash-preview';
+        const modelName = selectedModel?.model || 'gemini-3-flash-preview';
 
         console.log(`🔮 Using Puter API with model: ${modelName}`);
 
@@ -418,6 +420,8 @@ ${conversationHistory}
         messageContent = typeof response === 'object' && response !== null && (response as any).message
           ? (response as any).message.content?.[0]?.text || String(response)
           : String(response) || "No response";
+      } else if (apiType === 'manus' || apiType === 'bluesminds') {
+        messageContent = await callManusApi(fullPrompt, systemPrompt, responseMode);
       } else {
         // Use AIML API for detailed, very_detailed, and premium modes
         const modeToAIML: Record<string, 'detailed' | 'very_detailed' | 'premium'> = {
@@ -427,15 +431,10 @@ ${conversationHistory}
         };
 
         const aimlMode = modeToAIML[responseMode];
-        if (!aimlMode) {
-          // Check if it's manus mode
-          if (responseMode === 'manus') {
-            messageContent = await callManusApi(fullPrompt, systemPrompt);
-          } else {
-            throw new Error(`Unknown response mode: ${responseMode}`);
-          }
-        } else {
+        if (aimlMode) {
           messageContent = await callAIMLApi(fullPrompt, aimlMode, systemPrompt);
+        } else {
+          throw new Error(`Unknown response mode/API type: ${responseMode} / ${apiType}`);
         }
       }
 
@@ -451,7 +450,7 @@ ${conversationHistory}
     } catch (error) {
       console.error("AI Error:", error);
       let errorContent = t.errorMessage;
-      if (responseMode === 'manus') {
+      if (apiType === 'manus') {
         errorContent = language === 'ar' 
           ? "عذراً، هناك مشكلة في الاتصال. يرجى فتح القائمة الجانبية (الإعدادات) والضغط على زر 'تسجيل دخول' وإنشاء حساب لتتمكن من الاستمرار في استخدام الذكاء الاصطناعي."
           : "ببورە، کێشەیەک هەیە لە پەیوەندیکردن. تکایە لە مینیوی لاکێشەوە کرتە لە دوگمەی 'تسجیل دخول' بکە و هەژمارێک دروستبکە بۆ بەردەوامبوون لە بەکارهێنانی زیرەکی دەستکردەکە.";

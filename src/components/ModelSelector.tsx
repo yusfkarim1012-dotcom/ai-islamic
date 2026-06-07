@@ -5,7 +5,7 @@ import { Zap, Brain, Check, Sparkles, MessageSquare, Wand2 } from "lucide-react"
 import { translations } from "@/lib/translations";
 import { getAdminConfig, CONFIG_UPDATED_EVENT } from "@/lib/admin-config";
 
-export type ResponseMode = 'fast' | 'manus';
+export type ResponseMode = 'fast' | 'manus' | 'bluesminds' | string;
 
 interface ModelSelectorProps {
     currentMode: ResponseMode;
@@ -32,6 +32,7 @@ export const ModelSelector = ({ currentMode, onSelectMode, lang }: ModelSelector
     const getIcon = (id: string) => {
         switch (id) {
             case 'manus': return Wand2;
+            case 'bluesminds': return Brain;
             case 'fast': return Zap;
             default: return Brain;
         }
@@ -41,6 +42,7 @@ export const ModelSelector = ({ currentMode, onSelectMode, lang }: ModelSelector
     const getColor = (id: string) => {
         switch (id) {
             case 'manus': return 'text-orange-500 bg-orange-500/10';
+            case 'bluesminds': return 'text-blue-500 bg-blue-500/10';
             case 'fast': return 'text-yellow-500 bg-yellow-500/10';
             default: return 'text-blue-500 bg-blue-500/10';
         }

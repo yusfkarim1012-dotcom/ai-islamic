@@ -31,7 +31,8 @@ export interface ManusChatResponse {
 
 export const callManusApi = async (
   prompt: string,
-  systemPrompt: string
+  systemPrompt: string,
+  selectedMode?: string
 ): Promise<string> => {
   const adminConfig = getAdminConfig();
   const manusModel = getModelById('manus');
@@ -39,7 +40,11 @@ export const callManusApi = async (
 
   const isBluesmindsDisabled = adminConfig.serverDisabled === 'bluesminds';
   const isManusDisabled = adminConfig.serverDisabled === 'manus';
-  const isManusFirst = adminConfig.serverPriority === 'manus_first';
+  const isManusFirst = selectedMode === 'manus'
+    ? true
+    : selectedMode === 'bluesminds'
+      ? false
+      : adminConfig.serverPriority === 'manus_first';
 
   let lastError: any = null;
 

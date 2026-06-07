@@ -355,6 +355,15 @@ const Admin = () => {
                                         <input
                                             type="radio"
                                             name={`apiType-${model.id}`}
+                                            checked={model.apiType === 'bluesminds'}
+                                            onChange={() => updateModelField(model.id, 'apiType', 'bluesminds')}
+                                        />
+                                        Bluesminds API
+                                    </Label>
+                                    <Label className="flex items-center gap-2">
+                                        <input
+                                            type="radio"
+                                            name={`apiType-${model.id}`}
                                             checked={model.apiType === 'puter'}
                                             onChange={() => updateModelField(model.id, 'apiType', 'puter')}
                                         />
