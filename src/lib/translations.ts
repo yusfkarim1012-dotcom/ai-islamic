@@ -84,6 +84,10 @@ export interface Translations {
     manus: string;
     manusDesc: string;
     manusFull: string;
+    // Bluesminds Model
+    bluesminds: string;
+    bluesmindsDesc: string;
+    bluesmindsFull: string;
     close: string;
 }
 
@@ -171,6 +175,10 @@ export const translations: Record<Language, Translations> = {
         manus: 'پێشەنگ',
         manusDesc: 'مۆدێلی پێشەنگ بۆ وەڵامدانەوەی خێرا',
         manusFull: 'مۆدێلی پێشەنگ',
+        // Bluesminds Model
+        bluesminds: 'بلوزمایندز',
+        bluesmindsDesc: 'مۆدێلی بلوزمایندز بۆ وەڵامدانەوەی خێرا',
+        bluesmindsFull: 'مۆدێلی بلوزمایندز',
         close: 'داخستن',
     },
     ar: {
@@ -256,6 +264,10 @@ export const translations: Record<Language, Translations> = {
         manus: 'الرائد',
         manusDesc: 'نموذج الرائد للإجابات السريعة',
         manusFull: 'نموذج الرائد',
+        // Bluesminds Model
+        bluesminds: 'بلوزمايندز',
+        bluesmindsDesc: 'نموذج بلوزمايندز للإجابات السريعة',
+        bluesmindsFull: 'نموذج بلوزمايندز',
         close: 'إغلاق',
     },
 };

@@ -450,7 +450,7 @@ ${conversationHistory}
     } catch (error) {
       console.error("AI Error:", error);
       let errorContent = t.errorMessage;
-      if (apiType === 'manus') {
+      if (apiType === 'manus' || apiType === 'bluesminds') {
         errorContent = language === 'ar' 
           ? "عذراً، هناك مشكلة في الاتصال. يرجى فتح القائمة الجانبية (الإعدادات) والضغط على زر 'تسجيل دخول' وإنشاء حساب لتتمكن من الاستمرار في استخدام الذكاء الاصطناعي."
           : "ببورە، کێشەیەک هەیە لە پەیوەندیکردن. تکایە لە مینیوی لاکێشەوە کرتە لە دوگمەی 'تسجیل دخول' بکە و هەژمارێک دروستبکە بۆ بەردەوامبوون لە بەکارهێنانی زیرەکی دەستکردەکە.";
