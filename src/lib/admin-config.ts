@@ -101,7 +101,30 @@ export const getAdminConfig = (): AdminConfig => {
     try {
         const stored = localStorage.getItem(ADMIN_CONFIG_KEY);
         if (stored) {
-            const config = { ...defaultConfig, ...JSON.parse(stored) };
+            const parsed = JSON.parse(stored);
+            const config = { ...defaultConfig, ...parsed };
+            
+            if (!config.models || !Array.isArray(config.models)) {
+                config.models = [...defaultConfig.models];
+            } else {
+                if (!config.models.some(m => m.id === 'bluesminds')) {
+                    const fastIndex = config.models.findIndex(m => m.id === 'fast');
+                    const bluesmindsDefault = defaultConfig.models.find(m => m.id === 'bluesminds') || {
+                        id: 'bluesminds',
+                        name: 'بلوزمایندز',
+                        fullName: 'مۆدێلی بلوزمایندز',
+                        enabled: true,
+                        apiType: 'bluesminds',
+                        model: 'gemini-2.5-flash'
+                    };
+                    if (fastIndex !== -1) {
+                        config.models.splice(fastIndex, 0, bluesmindsDefault);
+                    } else {
+                        config.models.push(bluesmindsDefault);
+                    }
+                }
+            }
+
             if (!config.manusApiKeys || !Array.isArray(config.manusApiKeys)) {
                 config.manusApiKeys = config.manusApiKey ? [config.manusApiKey] : [];
             }
